@@ -512,3 +512,142 @@ const pass = "/rank/indexPlus/brand_id/1"
 console.log(url(pass));
 ```
 
+
+
+### 4 oklink
+
+#### 4.1 查看接口
+
+![image-20230605145711223](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605145711223.png)
+
+
+
+
+
+#### 4.2 搜索js文件
+
+
+
+##### 找到加密的位置
+
+找到方法，再进行搜索
+
+![image-20230605150642725](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605150642725.png)
+
+
+
+#### 4.3 js实现
+
+找到webpack打包的代码，改写后补齐所有方法
+
+##### 原代码
+
+```js
+{
+    key: "encryptApiKey",
+    value: function() {
+        var t = this.API_KEY
+          , e = t.split("")
+          , n = e.splice(0, 8);
+        return t = e.concat(n).join("")
+    }
+}, {
+    key: "encryptTime",
+    value: function(t) {
+        var e = (1 * t + a).toString().split("")
+          , n = parseInt(10 * Math.random(), 10)
+          , r = parseInt(10 * Math.random(), 10)
+          , o = parseInt(10 * Math.random(), 10);
+        return e.concat([n, r, o]).join("")
+    }
+}, {
+    key: "comb",
+    value: function(t, e) {
+        var n = "".concat(t, "|").concat(e);
+        return window.btoa(n)
+    }
+}, 
+{
+    key: "getApiKey",
+    value: function() {
+        var t = (new Date).getTime()
+          , e = this.encryptApiKey();
+        return t = this.encryptTime(t),
+        this.comb(e, t)
+    }
+}
+```
+
+
+
+##### 改写
+
+```js
+function encryptApiKey() {
+    let API_KEY = "a2c903cc-b31e-4547-9299-b6d07b7631ab"
+    var t = API_KEY
+        , e = t.split("")
+        , n = e.splice(0, 8);
+    return t = e.concat(n).join("")
+}
+
+function encryptTime(t) {
+    let a = 1111111111111
+    var e = (1 * t + a).toString().split("")
+        , n = parseInt(10 * Math.random(), 10)
+        , r = parseInt(10 * Math.random(), 10)
+        , o = parseInt(10 * Math.random(), 10);
+    return e.concat([n, r, o]).join("")
+}
+
+function comb(t, e) {
+    var n = "".concat(t, "|").concat(e);
+    return Buffer.from(n).toString("base64")
+}
+
+function getApiKey() {
+    var t = (new Date).getTime()
+        , e = encryptApiKey();
+    return t = encryptTime(t),
+        comb(e, t)
+}
+
+getApiKey()
+```
+
+
+
+#### 4.4 python代码实现
+
+```python
+
+def get_api_key():
+    """获取加密字符串"""
+    times = int(time.time() * 1000)
+
+    # 固定的加密值
+    api_key = "a2c903cc-b31e-4547-9299-b6d07b7631ab"
+
+    # encryptApiKey()
+    key1 = api_key[0:8]
+    key2 = api_key[8:]
+    # 交换位置
+    new_key = key2 + key1
+
+    # encryptTime()
+    a = 1111111111111
+
+    new_time = str(1 * times + a)
+    random1 = str(random.randint(0, 9))
+    random2 = str(random.randint(0, 9))
+    random3 = str(random.randint(0, 9))
+    # 拼接
+    cur_time = new_time + random1 + random2 + random3
+
+    # 合并前面生成的两个值，并用base64加密
+    this_key = new_key + "|" + cur_time
+    n_k = this_key.encode("utf-8")
+    x_apikey = base64.b64encode(n_k)
+    return x_apikey
+```
+
