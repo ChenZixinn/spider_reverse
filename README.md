@@ -302,7 +302,7 @@ print(result)
 
 ## 二、请求参数加密
 
-### 1 1688 TODO
+### 1 1688
 
 url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019category.1.6e517a6exMGJcG&mainId=10166
 
@@ -377,12 +377,60 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 #### 2.1 加密字段
 
+为base64加密
+
 ![image-20230602102009457](./README.assets/image-20230602102009457.png)
 
 
 
 #### 2.2 搜索js文件
 
-通过标头名或者路径搜索，找到js文件
+通过标头名或者路径搜索，找到js文件；该方法使用了js混淆。
 
 ![image-20230602102531128](./README.assets/image-20230602102531128.png)
+
+
+
+### 3 七麦数据
+
+url: 
+
+
+
+#### 3.1找到接口
+
+通过英文搜索到接口（中文有编码）
+
+![image-20230604223717940](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230604223717940.png)
+
+#### 3.2 搜索js文件
+
+##### 找到js文件
+
+接口的参数名搜索js，参数名：**analysis**，找到对应的js文件
+
+
+
+##### 添加断点
+
+在js文件中添加接口url的路径：/rank/indexPlus/brand_id/1
+
+
+
+##### 单步调试找到加密位置
+
+![image-20230604225151994](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230604225151994.png)
+
+
+
+#### 3.3 编写js
+
+js使用了js混淆，需要根据调试根据判断使用了什么方法
+
+##### 
+
+js
+
+```js
+```
+
