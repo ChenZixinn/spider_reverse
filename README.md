@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据**
+目前已经爬取：**1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)**
 
 环境安装：
 
@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 
 
-### 1 whggzy（接口参数）
+### 1、whggzy（接口参数）
 
 #### 1.1 搜索响应数据找到接口
 
@@ -101,7 +101,7 @@ print(requests.post(url, headers=headers, data=data).text)
 
 
 
-### 2 企名科技(数据加密)
+### 2、企名科技(数据加密)
 
 url: https://www.qimingpian.com/finosda/project/pinvestment
 
@@ -168,7 +168,7 @@ print(f"type:{type(ctx)}")
 
 
 
-### 3 建筑(AES)
+### 3、建筑(AES)
 
 url： https://jzsc.mohurd.gov.cn/data/company
 
@@ -304,7 +304,7 @@ print(result)
 
 ## 二、请求参数加密
 
-### 1 1688
+### 1、1688
 
 url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019category.1.6e517a6exMGJcG&mainId=10166
 
@@ -371,7 +371,7 @@ print(requests.get(url, headers=headers, params=params).text)
 
 
 
-### 2 cninfo TODO
+### 2、cninfo TODO
 
 url: https://webapi.cninfo.com.cn/#/marketDataDate
 
@@ -393,7 +393,7 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 
 
-### 3 七麦数据（接口隐藏、js混淆）
+### 3、七麦数据（接口隐藏、js混淆）
 
 url: https://www.qimai.cn/rank
 
@@ -514,7 +514,7 @@ console.log(url(pass));
 
 
 
-### 4 oklink
+### 4、oklink
 
 #### 4.1 查看接口
 
@@ -649,5 +649,234 @@ def get_api_key():
     n_k = this_key.encode("utf-8")
     x_apikey = base64.b64encode(n_k)
     return x_apikey
+```
+
+
+
+### 5、去哪儿机票服务
+
+url:https://m.flight.qunar.com/h5/flight/
+
+#### 5.1、接口的加密
+
+1、请求参数：**\_\_m\_\_**
+
+![image-20230605172141802](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605172141802.png)
+
+2、请求头参数：**键值对加密**
+
+![image-20230605172331402](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605172331402.png)
+
+#### 5.2、请求参数
+
+##### 通过js查找算法	
+
+f()为**md5**加密
+
+![image-20230605223339438](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605223339438.png)
+
+
+
+u()为**SHA1**加密
+
+![image-20230605223535368](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605223535368.png)
+
+##### js代码解析
+
+```js
+// 所有方法
+
+// 加密算法
+function encryptFunction() {
+    /**
+     * 调试进入这两个算法中，找到他们对应的算法，找关键字，例如算法名称
+     * f：md5
+     * n: SHA1
+     */
+    return [function (e) {
+        // t % 2 == 0执行这个方法
+        // e = t时间戳 + n字符串
+        var t = (0,
+            u.default)(e).toString();
+        return (0,
+            f.default)(t).toString()
+    }
+        // t % 2 == 1执行这个方法
+        , function (e) {
+            var t = (0,
+                f.default)(e).toString();
+            return (0,
+                u.default)(t).toString()
+        }
+    ]
+}
+
+function dencryptCode(t) {
+    return t.map(function (e) {
+        return String.fromCharCode(e - 2)
+    }).join("")
+}
+
+function getQtTime(t) {
+    /*
+    * 如果有t这里直接返回t
+    * 没t这里把时间戳分割后的char值-2转为字符串
+    */
+    return t ? Number(t.split(",").map(function (e) {
+        return String.fromCharCode(e - 2)
+    }).join("")) : 0
+}
+
+// 获取字符串方法
+function getTokenStr() {
+    var t = this.dencryptCode(this.tokenStr);
+    // 这里选择了页面中一个id为t的元素的值
+    var n = document.getElementById(t).innerHTML;
+    // 这里会返回元素的值或者方法的值
+    return n ? n : (0,
+        s.default)(this.dencryptCode(this.cookieToken))
+}
+
+
+// 获取参数的方法
+function encrypt() {
+    // t是页面元素的值
+    var t = this.getTokenStr()
+        // 这里n是时间戳
+        , n = this.getQtTime((0,
+        s.default)(this.dencryptCode(this.qtTime)))
+        // r是对时间戳取模
+        , r = n % 2;
+    return encryptFunction()[r](t + n)
+}
+
+// 加密的方法
+function encryptToken(t) {
+    return (0,
+        f.default)(t).toString()
+}
+```
+
+
+
+##### python生成该参数
+
+根据前面解析js代码，得到m参数的生成逻辑
+
+```python
+import hashlib
+import time
+
+def md5_hash(text):
+    # 创建MD5哈希对象
+    md5_hasher = hashlib.md5()
+    # 更新哈希对象以包含待加密的文本
+    md5_hasher.update(text.encode('utf-8'))
+    # 返回MD5加密后的结果
+    return md5_hasher.hexdigest()
+
+def sha1_hash(text):
+    # 创建SHA1哈希对象
+    sha1_hasher = hashlib.sha1()
+    # 更新哈希对象以包含待加密的文本
+    sha1_hasher.update(text.encode('utf-8'))
+    # 返回SHA1加密后的结果
+    return sha1_hasher.hexdigest()
+
+
+def get_m():
+    # .data["__m__"] = u.default.encryptToken(u.default.encrypt());
+    # 获取需要被加密的参数，即u.default.encrypt()
+
+    # 页面存储的token"00008a002f1051a169b06202"
+    t = "00008a002f1051a169b06202"
+    # 时间戳
+    n = int(time.time() * 1000)
+    # n = 1686020493263
+    # 时间戳取余
+    r = n % 2
+
+    p1 = t + str(n)
+
+    # 根据r决定先用SHA1还是MD5
+    if r == 0:
+        # SHA1
+        p1 = sha1_hash(p1)
+        # MD5
+        p1 = md5_hash(p1)
+    else:
+        # MD5
+        p1 = md5_hash(p1)
+        # SHA1
+        p1 = sha1_hash(p1)
+    # 最后再用一次MD5加密
+    p1 = md5_hash(p1)
+
+    return p1
+
+# fbc1646d57a2b22ceb5f5ef60018f67d
+print(get_m())
+```
+
+
+
+#### 5.3、请求头参数
+
+##### js代码解析
+
+```js
+// 生成key的方法，传入的参数是时间戳
+function getRandomKey(t) {
+    var n = "";
+    // 从时间戳的第四位开始截取
+    var r = ("" + t).substr(4);
+    // 时间戳每一位映射的acsii编码
+    r.split("").forEach(function (e) {
+        n += e.charCodeAt()
+    });
+    // md5加密
+    var i = (0,
+        f.default)(n).toString();
+    // -6:
+    return i.substr(-6)
+}
+
+// headers的主要生成方法
+function getToken() {
+    // dict
+    var t = {};
+    // this.getQtTime((0,s.default)(this.dencryptCode(this.qtTime))) 依然是时间戳
+  	// value是__m__参数一样的加密方法
+    t[this.getRandomKey(this.getQtTime((0,
+        s.default)(this.dencryptCode(this.qtTime))))] = this.encrypt();
+    return t
+}
+```
+
+##### python实现
+
+```python
+def get_random_key(t):
+    """ 获取请求头参数的key """
+    # 截取4开始的字符串
+    t = str(t)[4:]
+    n = ""
+    # 转为ascii编码并拼接
+    for i in t:
+        n += str(ord(i))
+    # md5解密
+    key = md5_hash(n)
+    # 返回最后6位
+    return key[-6:]
+
+
+def get_headers():
+    """ 获取请求头参数 键值对"""
+    t = int(time.time() * 1000)
+		# 获取key
+    key = get_random_key(t)
+    # 获取值
+    value = get_m(t)
+    return {key:value}
 ```
 
