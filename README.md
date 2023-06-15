@@ -243,7 +243,7 @@ AFB3D177A5D1D916CFEFBE70FEFC0C59C0463AE137DE1A099C4B169B8AB9DBC33EE55B1...（加
 
 #### 4.2 搜索加密接口
 
-![image-20230602153850946](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230602153850946.png)
+![image-20230602153850946](./README.assets/image-20230602153850946.png)
 
 
 
@@ -253,7 +253,7 @@ AFB3D177A5D1D916CFEFBE70FEFC0C59C0463AE137DE1A099C4B169B8AB9DBC33EE55B1...（加
 
 通过断点找到加密的方法，方法经过了js混淆，直接复制方法，执行这个方法，根据提示补齐所有缺失的属性。
 
-![image-20230602154006084](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230602154006084.png)
+![image-20230602154006084](./README.assets/image-20230602154006084.png)
 
 
 
@@ -403,7 +403,7 @@ url: https://www.qimai.cn/rank
 
 通过英文搜索到接口（中文有编码）
 
-![image-20230604223717940](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230604223717940.png)
+![image-20230604223717940](./README.assets/image-20230604223717940.png)
 
 #### 3.2 搜索js文件
 
@@ -421,7 +421,7 @@ url: https://www.qimai.cn/rank
 
 ##### 单步调试找到加密位置
 
-![image-20230604225151994](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/SpiderReverse/README.assets/image-20230604225151994.png)
+![image-20230604225151994](./README.assets/image-20230604225151994.png)
 
 
 
@@ -878,5 +878,121 @@ def get_headers():
     # 获取值
     value = get_m(t)
     return {key:value}
+```
+
+
+
+### 6、美团
+
+url: https://gz.meituan.com/meishi/
+
+#### 6.1、接口的加密
+
+_token为加密参数。
+
+![image-20230609204919138](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230609204919138.png)
+
+
+
+#### 6.2、查找js
+
+查找到token的生成位置，找到加密的方法
+
+![image-20230609210113287](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230609210113287.png)
+
+
+
+#### 6.3、生成参数
+
+_token参数为iP类进行加密后得到的，但目前只能得出iP的sign参数，对iP进行加密后没办法得到最终的值，**如果你知道怎么做欢迎提交issue给我**。
+
+
+
+**iP.sign**为参数排序后进行base64加密。
+
+```python
+def decode_sign(token_str):
+    token_str = token_str.replace(" ", "")
+
+    # base编码
+    # token_str = f"\"{str(token_str)}\""
+    # token_str = str(token_str)
+    # token_str = f"'{token_str}'"
+
+    print(f"str:::{token_str}")
+
+    encode1 = str(token_str).encode()
+    # 参数 压缩成 特殊的编码
+    compress = zlib.compress(encode1)
+    b_encode = base64.b64encode(compress)
+    # 转变 str
+    e_sign = str(b_encode, encoding="utf-8")
+    return e_sign
+  
+# 查询参数
+params = {
+    'cityName': '广州',
+    'cateId': 0,
+    'areaId': 0,
+    'sort': '',
+    'dinnerCountAttrId': '',
+    'page': 1,
+    'userId': '234746173',
+    'uuid': 'cab1469b7bd84ca09ea5.1686484028.1.0.0',
+    'platform': 1,
+    'partner': 126,
+    'originUrl': 'https://gz.meituan.com/meishi/',
+    'riskLevel': 1,
+    'optimusCode': 10
+}
+
+# 生成sign
+params_str =  "\""
+# 对key进行排序
+keys = [i for i in params.keys()]
+keys.sort()
+# 拼接
+for key in keys:
+    params_str += f"{key}={params.get(key)}&"
+params_str = params_str[:-1]
+params_str += "\""
+# 加密
+sign = decode_sign(params_str)
+
+# iP
+iP = {
+    'rId': 100900,
+    'ver': "1.0.6",
+    # 'ts': 1686369166338,
+    # 'cts': 1686369167064,
+    "ts":1686485181487,
+    "cts":1686485200311,
+    'brVD': [
+        1920,
+        150
+    ],
+    'brR': [
+        [
+            1920,
+            1080
+        ],
+        [
+            1920,
+            981
+        ],
+        30,
+        30
+    ],
+    'bI': [
+        'https://gz.meituan.com/meishi/',
+        ''
+    ],
+    'mT': [],
+    'kT': [],
+    'aT': [],
+    'tT': [],
+    'aM': '',
+    'sign': sign
+}
 ```
 
