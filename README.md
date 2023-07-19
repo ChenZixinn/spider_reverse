@@ -996,3 +996,42 @@ iP = {
 }
 ```
 
+
+
+## 三、其他
+
+### 1、空气质量指数（反debug）
+
+url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
+
+#### 1.1 反debug
+
+##### 1.1.1 跳过debug
+
+![image-20230622123802952](./README.assets/image-20230622123802952.png)
+
+##### 1.1.2 弹出开发者工具
+
+![image-20230622124037862](./README.assets/image-20230622124037862.png)
+
+#### 1.2 请求参数解析
+
+通过js生产请求参数
+
+ [aqi.js](other/demo1_aqi/aqi.js) 
+
+![image-20230705220910980](./README.assets/image-20230705220910980.png)
+
+
+
+### 2、天安财险
+
+![image-20230705221116122](./README.assets/image-20230705221116122.png)
+
+- 完成登陆请求中的json_key参数加密方法
+- 解析返回的接口
+
+ [tianaw.js](other/demo2_tianaw/tianaw.js)
+
+
+
