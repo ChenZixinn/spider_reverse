@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)**
+目前已经爬取：**1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
 
 环境安装：
 
@@ -1035,3 +1035,186 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
+### 3、企知道（2023-7-23：反debug、AES加密、逆向）
+
+url：https://patents.qizhidao.com/
+
+
+
+#### 3.1 反debug
+
+这个网站的反debug是带参数的，直接设置跳过会导致返回不了结果卡死。需要通过脚本返回空的值，注意：需要等页面加载后再执行。
+
+```js
+func_constructor_ = Function.prototype.constructor;
+Function.prototype.constructor = function (a) {
+    if (a == 'debugger') {
+        return function(){};
+    }
+    return func_constructor_(a);
+};
+```
+
+![image-20230723113329633](./README.assets/image-20230723113329633.png)
+
+
+
+#### 3.2、构造请求接口
+
+复制接口的cURL到https://curlconverter.com/自动构造，代码有点长这里只放片段：
+
+```python
+import requests
+
+cookies = {
+    # ...
+}
+
+headers = {
+    'authority': 'app.qizhidao.com',
+  	# ...
+}
+
+json_data = {
+    'text_ver': 'N',
+    # ...
+    'statement': '华为',
+    'filter': '',
+    'pageCount': 21073,
+    'checkResult': True,
+}
+
+response = requests.post(
+    'https://app.qizhidao.com/qzd-bff-patent/patent/simple-version/search',
+    cookies=cookies,
+    headers=headers,
+    json=json_data,
+).json()
+
+# 返回结果：
+# {'code': 0, 'status': 0, 'success': True, 'msg': '成功', 'data1': 'ikEaI3qCl29i...', 'hasUse': 2}
+```
+
+
+
+#### 3.3 解密
+
+##### 3.3.1 参数解释
+
+**data1**：这个是加密后的参数，需要解密。AES加密
+
+**hasUse**：加密的key的位置。key是个字典，2代表第二个value
+
+
+
+##### 3.3.2 查找加密js
+
+- 搜索”encrypt“
+
+![image-20230723115442814](./README.assets/image-20230723115442814.png)
+
+- 搜索接口
+
+![image-20230723120236468](./README.assets/image-20230723120236468.png)
+
+> 交集在**186ef37.js**
+
+
+
+##### 3.3.3 断点调试
+
+![image-20230723120510583](./README.assets/image-20230723120510583.png)
+
+```js
+// 第一个参数是密文，第二个参数是加密的key
+// AES加密
+_0xecb012 = function(_0x23e639, _0x5b5a7f) {
+            return function(_0x1a0f85, _0x3f0bf9) {
+                var _0x17296a = a0_0xe452
+                  , _0x49db2a = _0x2ecfe6['a']['enc']['Utf8']['parse'](_0x3f0bf9 || '46cc793c53' + _0x17296a(0x1f7))
+                  , _0x5bc6c6 = _0x2ecfe6['a'][_0x17296a(0x1dc)]['decrypt'](_0x1a0f85, _0x49db2a, {
+                    // 加密模式是ECB
+                    'mode': _0x2ecfe6['a'][_0x17296a(0x22f)][_0x17296a(0x27a)],
+                    'padding': _0x2ecfe6['a'][_0x17296a(0x242)][_0x17296a(0x27f)]
+                });
+                return _0x2ecfe6['a'][_0x17296a(0x23b)][_0x17296a(0x238)][_0x17296a(0x1f9)](_0x5bc6c6)[_0x17296a(0x1d6)]();
+            }(_0x23e639, _0x5b3606[_0x5b5a7f]);
+```
+
+
+
+通过观察发现key不是固定的，存储在一个字典中。通过接口返回的值hasUse选择对应的key。
+
+![image-20230723121116914](./README.assets/image-20230723121116914.png)
+
+#### 3.4  构造解密函数
+
+```python
+def AES_decrypt(data, hasUse:int):
+    key_list = [b"xc46VoB49X3PGYAg", b"KE3pb84wxqLTZEG3", b"18Lw0OEaBBUwHYNT", b"jxxWWIzvkqEQcZrd", b"40w42rjLEXxYhxRn",
+                b"K6hkD03WNW8N1fPM", b"I8V3IwIhrwNbWxqz", b"3JNNbxAP4zi5oSGA", b"7pUuESQl8aRTFFKK", b"KB4GAHN6M5soB3WV"]
+    # 解码
+    html = base64.b64decode(data)
+    # mode为ECB的AES加密
+    aes = AES.new(key_list[hasUse-1], AES.MODE_ECB)
+    # 解密
+    info = aes.decrypt(html)
+    # 填充
+    decrypt = unpad(info, AES.block_size).decode()
+    return decrypt
+```
+
+
+
+##### 3.5 结果
+
+[完整代码](./other/demo3_qizhidao/crawler_qizhidao.py)
+
+![image-20230723123350450](./README.assets/image-20230723123350450.png)
+
+
+
+# 2023（TODO）
+
+## day1
+
+TODO
+
+## day2
+
+TODO
+
+## day3-常见反扒与js混淆
+
+### 1、反debug(带参数)
+
+http://www.spolicy.com/
+
+
+
+1.1 查看调用堆栈，找到第一个方法
+
+![image-20230723101606586](./README.assets/image-20230723101606586.png)
+
+```js
+// 调用的方法
+[f(-302, -39, -274, -178, "mK8a") + o(430, 0, "sXA$") + "r"](t[c(-294, "o#Hz", 0, -62)](t[h(1402, 1326, 1439, "wJdL")], t[h(1596, 1182, 1426, "2QAW")]))[c(-180, "mK8a", 0, -159)](t[h(1113, 950, 1143, "Es!I")])
+
+// 逐步拆解
+
+[f(-302, -39, -274, -178, "mK8a") + o(430, 0, "sXA$") + "r"]
+// => ['constructor']
+
+(t[c(-294, "o#Hz", 0, -62)](t[h(1402, 1326, 1439, "wJdL")], t[h(1596, 1182, 1426, "2QAW")]))
+// => debugger
+
+[c(-180, "mK8a", 0, -159)]
+// => call
+
+(t[h(1113, 950, 1143, "Es!I")])
+// => action
+```
+
+
+
+### 
