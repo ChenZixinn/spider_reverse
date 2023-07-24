@@ -1178,11 +1178,144 @@ def AES_decrypt(data, hasUse:int):
 
 ## day1
 
-TODO
+略
 
 ## day2
 
-TODO
+
+
+### 阿里系cookie加密（acw_sc__v2 ）
+
+#### 1、请求
+
+有两次请求，第一次获取js代码，第二次通过代码生成参数发送请求
+
+尝试本地替换，发现没有进入方法。是在VM中执行的
+
+
+
+#### 2、查找js代码
+
+##### 打断点，查看堆栈
+
+进入debug，可以看到调用的位置，打断点调试，**进入堆栈中的方法**。
+
+![image-20230725000802567](./README.assets/image-20230725000802567.png)
+
+
+
+##### 找到参数
+
+参数是**arg2**，查找这个参数。
+
+![image-20230725000921359](./README.assets/image-20230725000921359.png)
+
+
+
+##### 找生成参数的js代码
+
+返回原代码，找到生成arg2的代码，把混淆的代码还原。通过对比，只有arg1值是不固定的，在第一次请求中就包含了这个值，通过正则提取，传入js代码里生成就可以得到cookie。
+
+```js
+String['prototype']['hexXor'] = function (_0x4e08d8) {
+    var _0x5a5d3b = '';
+    for (var _0xe89588 = 0x0; _0xe89588 < this['length'] && _0xe89588 < _0x4e08d8['length']; _0xe89588 += 0x2) {
+        var _0x401af1 = parseInt(this['slice'](_0xe89588, _0xe89588 + 0x2), 0x10);
+        var _0x105f59 = parseInt(_0x4e08d8['slice'](_0xe89588, _0xe89588 + 0x2), 0x10);
+        var _0x189e2c = (_0x401af1 ^ _0x105f59)['toString'](0x10);
+        if (_0x189e2c['length'] == 0x1) {
+            _0x189e2c = '\x30' + _0x189e2c;
+        }
+        _0x5a5d3b += _0x189e2c;
+    }
+    return _0x5a5d3b;
+}
+
+String['prototype']['unsbox'] = function () {
+    var _0x4b082b = [0xf, 0x23, 0x1d, 0x18, 0x21, 0x10, 0x1, 0x26, 0xa, 0x9, 0x13, 0x1f, 0x28, 0x1b, 0x16, 0x17, 0x19, 0xd, 0x6, 0xb, 0x27, 0x12, 0x14, 0x8, 0xe, 0x15, 0x20, 0x1a, 0x2, 0x1e, 0x7, 0x4, 0x11, 0x5, 0x3, 0x1c, 0x22, 0x25, 0xc, 0x24];
+    var _0x4da0dc = [];
+    var _0x12605e = '';
+    for (var _0x20a7bf = 0x0; _0x20a7bf < this['length']; _0x20a7bf++) {
+        var _0x385ee3 = this[_0x20a7bf];
+        for (var _0x217721 = 0x0; _0x217721 < _0x4b082b['length']; _0x217721++) {
+            if (_0x4b082b[_0x217721] == _0x20a7bf + 0x1) {
+                _0x4da0dc[_0x217721] = _0x385ee3;
+            }
+        }
+    }
+    _0x12605e = _0x4da0dc['join']('');
+    return _0x12605e;
+}
+
+function get_cookie(arg1) {
+
+    // 这个值是变化的
+    // var arg1 = 'E7FC4E89FD5A4E550E19A8BE2061BD16BE4C0DB3';
+
+    var _0x23a392 = arg1['unsbox']();
+
+    var _0x5e8b26 = '3000176000856006061501533003690027800375'
+// arg2 = _0x23a392[_0x55f3('0x1b', '\x7a\x35\x4f\x26')](_0x5e8b26);
+    arg2 = _0x23a392['hexXor'](_0x5e8b26);
+
+    return arg2
+}
+
+console.log(get_cookie('E7FC4E89FD5A4E550E19A8BE2061BD16BE4C0DB3'));
+```
+
+
+
+#### 3、发起请求、生成cookie
+
+[代码](2023/day2_cookie加密等/阿里系cookie/ali.py)
+
+```python
+import re
+
+import execjs
+import requests
+
+headers = {
+# ...
+}
+
+# 获取到第一次请求的值，返回生成cookie的代码，里面包含了需要的参数 arg1
+response = requests.get('https://xueqiu.com/today', headers=headers).text
+
+# with open("./ali.html", 'w', encoding='utf-8') as f:
+#     f.write(response)
+
+# 正则提取arg1的值
+# Regular expression pattern to match the argument assignment
+pattern = r"var arg1='([A-F0-9]+)';"
+
+# Search for the pattern in the JavaScript code
+arg1 = re.search(pattern, response).group(1)
+
+with open("./ali.js") as f:
+    js_code = f.read()
+
+cookie_acw_sc__v2 = execjs.compile(js_code).call("get_cookie", arg1)
+print(cookie_acw_sc__v2)
+
+cookies = {
+    'acw_sc__v2': cookie_acw_sc__v2,
+		# ...
+}
+
+headers = {
+ #...
+}
+
+response = requests.get('https://xueqiu.com/today', cookies=cookies, headers=headers).text
+print(response)
+
+```
+
+
+
+
 
 ## day3-常见反扒与js混淆
 
