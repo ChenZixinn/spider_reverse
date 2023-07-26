@@ -1268,7 +1268,7 @@ console.log(get_cookie('E7FC4E89FD5A4E550E19A8BE2061BD16BE4C0DB3'));
 
 #### 3、发起请求、生成cookie
 
-[代码](2023/day2_cookie加密等/阿里系cookie/ali.py)
+[代码](2023-7/day2_cookie加密等/spider_xueqiu/ali.py)
 
 ```python
 import re
@@ -1293,7 +1293,7 @@ pattern = r"var arg1='([A-F0-9]+)';"
 # Search for the pattern in the JavaScript code
 arg1 = re.search(pattern, response).group(1)
 
-with open("./ali.js") as f:
+with open("./xueqiu.js") as f:
     js_code = f.read()
 
 cookie_acw_sc__v2 = execjs.compile(js_code).call("get_cookie", arg1)
