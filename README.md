@@ -1319,13 +1319,13 @@ print(response)
 
 ## day3-常见反扒与js混淆
 
-### 1、反debug(带参数)
+### 1、产业政策大数据平台（带参数的反debug、进制流加密）
 
 http://www.spolicy.com/
 
 
 
-1.1 查看调用堆栈，找到第一个方法
+#### 1.1 查看调用堆栈，找到第一个方法
 
 ![image-20230723101606586](./README.assets/image-20230723101606586.png)
 
@@ -1350,4 +1350,163 @@ http://www.spolicy.com/
 
 
 
-### 
+#### 1.2执行脚本跳过debugger
+
+```js
+func_constructor_ = Function.prototype.constructor;
+Function.prototype.constructor = function (a) {
+    if (a == 'debugger') {
+        return function(){};
+    }
+    return func_constructor_(a);
+};
+```
+
+![image-20230725233312016](./README.assets/image-20230725233312016.png)
+
+
+
+
+
+#### 1.3 XHR断点找到接口
+
+xhr中添加接口的路径：**/info_api/policyType/showPolicyType**
+
+
+
+找到**interceptors.response.use**的位置，返回的结果中存在了加密数据**data**。
+
+![image-20230726000638651](./README.assets/image-20230726000638651.png)
+
+
+
+#### 1.4 找生成的方法，生成加密方法
+
+找到生成o的位置：
+
+![image-20230727000547059](./README.assets/image-20230727000547059.png)
+
+
+
+找到生成的方法：
+
+![image-20230727000609949](./README.assets/image-20230727000609949.png)
+
+
+
+这里缺少了Writer，断点进入，这个代码是在vm中的生成的，找到函数的位置，扣下来完整的代码，用变量接收：
+
+```js
+var writer_;
+commonjsGlobal = global;
+!function (g) {
+    var r, e, t, i;
+    r = {...},
+        e = {},
+        t = [16],
+        i = function t(n) {
+            var o = e[n];
+            return o || r[n][0].call(o = e[n] = {
+                exports: {}
+            }, t, o, o.exports),
+                o.exports
+        }(t[0]),
+        i.util.global.protobuf = i,
+    module && module.exports && (module.exports = i)
+    // 方法存放在i变量中
+    writer_ = i;
+}()
+
+
+function PolicyInfoByTypeIdParam_encode(m, w) {
+    if (!w)
+        w = writer_.Writer.create()
+    if (m.policyType != null && Object.hasOwnProperty.call(m, "policyType"))
+        w.uint32(10).string(m.policyType)
+    if (m.centralId != null && Object.hasOwnProperty.call(m, "centralId"))
+        w.uint32(18).string(m.centralId)
+    if (m.province != null && Object.hasOwnProperty.call(m, "province"))
+        w.uint32(26).string(m.province)
+    if (m.city != null && Object.hasOwnProperty.call(m, "city"))
+        w.uint32(34).string(m.city)
+    if (m.downtown != null && Object.hasOwnProperty.call(m, "downtown"))
+        w.uint32(42).string(m.downtown)
+    if (m.garden != null && Object.hasOwnProperty.call(m, "garden"))
+        w.uint32(50).string(m.garden)
+    if (m.sort != null && Object.hasOwnProperty.call(m, "sort"))
+        w.uint32(56).uint32(m.sort)
+    if (m.pageNum != null && Object.hasOwnProperty.call(m, "pageNum"))
+        w.uint32(64).uint32(m.pageNum)
+    if (m.pageSize != null && Object.hasOwnProperty.call(m, "pageSize"))
+        w.uint32(72).uint32(m.pageSize)
+    if (m.homePageFlag != null && Object.hasOwnProperty.call(m, "homePageFlag"))
+        w.uint32(80).uint32(m.homePageFlag)
+    return w
+}
+
+
+
+/**
+ * 接收类型和页号，返回请求所需的参数
+ * @param type 类型，str
+ * @param page 页号，int
+ * @returns {*} 加密后的数据，字典格式，数据在"data"
+ */
+function get_data(type, page) {
+    var data = {
+        "policyType": type,
+        "province": "",
+        "city": "",
+        "downtown": "",
+        "garden": "",
+        "centralId": "",
+        "sort": 0,
+        "homePageFlag": 1,
+        "pageNum": page,
+        "pageSize": 7
+    }
+    result = PolicyInfoByTypeIdParam_encode(data).finish().slice()
+
+    return result;
+}
+
+console.log(get_data("3", 1))
+```
+
+
+
+#### 1.5 携带加密参数发起请求
+
+```python
+import execjs
+import requests
+
+cookies = {
+    # 略
+}
+
+headers = {
+    'Accept': 'application/json, text/plain, */*',
+    # ... 略
+}
+
+with open("./spolicy.js") as f:
+    js_code = f.read()
+
+# 获取type4的，第一页的请求加密参数
+data = execjs.compile(js_code).call("get_data", "4", 1)
+print(data)
+
+response = requests.post(
+    'http://www.spolicy.com/info_api/policyType/showPolicyType',
+    cookies=cookies,
+    headers=headers,
+    # 转为bytes
+    data=bytes(data["data"]),
+    verify=False,
+).json()
+
+print(response)
+
+```
+
