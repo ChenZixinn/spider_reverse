@@ -1174,17 +1174,11 @@ def AES_decrypt(data, hasUse:int):
 
 
 
-# 2023（TODO）
-
-## day1
-
-略
-
-## day2
+# 案例_2023-7（TODO）
 
 
 
-### 阿里系cookie加密（acw_sc__v2 ）
+## 阿里系cookie加密（acw_sc__v2 ）
 
 #### 1、请求
 
@@ -1315,11 +1309,7 @@ print(response)
 
 
 
-
-
-## day3-常见反扒与js混淆
-
-### 1、产业政策大数据平台（带参数的反debug、进制流加密）
+## 产业政策大数据平台（带参数的反debug、进制流加密）
 
 http://www.spolicy.com/
 
