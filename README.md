@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**QQ音乐、产业政策大数据平台、企知道、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
+目前已经爬取：**中国五矿、qq音乐、产业政策大数据平台、企知道、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
 
 环境安装：
 
@@ -1498,5 +1498,305 @@ response = requests.post(
 
 print(response)
 
+```
+
+
+
+
+
+### 中国五矿（单文件webpack）
+
+url：https://ec.minmetals.com.cn/open/home/purchase-info
+
+#### 1、接口解析
+
+每次请求都有两个接口，**public**获取公钥，用于后面加密参数；**by-lx-page**是数据接口，参数param是加密后的请求参数
+
+![image-20230730115501441](./README.assets/image-20230730115501441.png)
+
+
+
+#### 2、解密js
+
+##### 2.1、搜索**/open/homepage/public**（public公钥接口路径）找到js文件位置
+
+![image-20230730115747471](./README.assets/image-20230730115747471.png)
+
+##### 2.2、在生成位置找到加载器
+
+![image-20230730110315271](./README.assets/image-20230730110315271.png)
+
+##### 2.3、只要加载器部分，下面的函数可以只复制需要的
+
+![image-20230730110359241](./README.assets/image-20230730110359241.png)
+
+##### 2.4、补充需要的模块，在这里搜索9816，复制到代码中
+
+![image-20230730111507516](./README.assets/image-20230730111507516.png)
+
+##### 2.5、运行时报错，原因是缺少模块，打印出e，看看报错前的模块名，补充模块
+
+```shel
+/minmetals.js:52
+return A[e].call(t.exports, t, t.exports, g),
+                        ^
+TypeError: Cannot read property 'call' of undefined
+
+```
+
+##### 2.6、之后补齐所有代码，有两个部分是变化的，**public**公钥和**e**请求参数部分，后续通过python传入
+
+```js
+// ....其他代码省略
+function get_param(public_key, param) {
+    // public_key
+    r = public_key
+    // e: params
+    e = param
+    t.setPublicKey(r),
+        a = m(m({}, e), {}, {
+            // 这里是md5加密，不用扣代码了，直接写一个
+            sign: md5Hash(JSON.stringify(e)),
+            timeStamp: +new Date
+        });
+    s = t.encryptLong(JSON.stringify(a))
+    return s
+}
+
+// 公钥
+r = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCSiymi3Afc6HgSatBwseBv/Q87Ul18dAPavud/9Jbr+w2xIoD9t/f1k8A/cv2apGmPwKnudecWa5IfXPVUvoqjG8GsTBR9kL4QKkBveZx46wx2KZEBSbjx9Ok92hgr6sCEHT4sO53VF6rhzYJ4WaqsugGdL3CrZEGV3x7MuvZ0tQIDAQAB'
+// 请求参数
+e = {
+    "inviteMethod": "",
+    "businessClassfication": "",
+    "mc": "",
+    "lx": "ZBGG",
+    "dwmc": "",
+    "pageIndex": 1
+}
+get_param(r, e)
+```
+
+
+
+#### 3、编写程序
+
+分为两个步骤，1是获取public公钥，2是将参数和公钥进行加密，发起请求
+
+```python
+import execjs
+import requests
+# 获取public
+import requests
+
+cookies = {
+    # ...
+}
+headers = {
+    # ...
+}
+
+# 获取public_key
+public_key = requests.post('https://ec.minmetals.com.cn/open/homepage/public', cookies=cookies, headers=headers).text
+print(public_key)
+
+
+# 获取parms加密参数
+with open("./minmetals.js") as f:
+    js_code = f.read()
+
+param = {
+    "inviteMethod": "",
+    "businessClassfication": "",
+    "mc": "",
+    "lx": "ZBGG",
+    "dwmc": "",
+    "pageIndex": 2
+}
+param = execjs.compile(js_code).call("get_param", public_key, param)
+
+json_data = {
+    'param': param
+}
+
+response = requests.post(
+    'https://ec.minmetals.com.cn/open/homepage/zbs/by-lx-page',
+    cookies=cookies,
+    headers=headers,
+    json=json_data,
+).json()
+
+print(response)
+```
+
+
+
+
+
+### QQ音乐
+
+url:https://y.qq.com/n/ryqq/search
+
+#### 1、接口解析
+
+![image-20230730123000503](./README.assets/image-20230730123000503.png)
+
+接口中**sign**参数为加密参数
+
+
+
+#### 2、还原js
+
+##### 2.1、搜索sign找到js文件
+
+![image-20230730122850019](./README.assets/image-20230730122850019.png)
+
+
+
+##### 2.2、加密的方法是o()，找到o的生成位置
+
+ **加载器**
+
+n为加载器，把n的代码复制（webpack）
+
+![image-20230730124305966](./README.assets/image-20230730124305966.png)
+
+
+
+```js
+var loader_;
+!function(e) {
+  // ...
+  // f是加载器，用全局变量接收
+  loader_ = f;
+}([])
+```
+
+
+
+**加载器方法**
+
+这里是具体方法，把整个代码复制，在原来的代码中导入
+
+![image-20230730124318895](./README.assets/image-20230730124318895.png)
+
+```js
+// 加载这个方法的所有代码
+require("module")
+var loader_;
+!function(e) {
+  // ...
+  // f是加载器，用全局变量接收
+  loader_ = f;
+}([])
+```
+
+
+
+##### 2.3、测试
+
+使用相同的参数，网页中返回的加密参数值为："zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0"
+
+```js
+// ....
+
+// 对比和网页的加密结果是否一致
+origin_result = "zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0"
+result = loader_(350).default(t_data)
+
+// 并不一致
+// zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0
+// zzb2938d59cvfb4kyj1do3c4ldgj6o9qe0f41793
+```
+
+
+
+##### 2.4、补充环境
+
+加密方法是一样的，但是结果不一样，考虑是环境的问题，补充一些环境再测试
+
+![image-20230730124957945](./README.assets/image-20230730124957945.png)
+
+```js
+navigator = {
+    canGoBack: true,
+    canGoForward: false,
+    currentEntry: {
+        "id": "661fc912-9d2d-45e5-a144-fae79c979d88",
+        "index": 5,
+        "key": "0c8d1b22-53bb-4d51-98e0-5830e055d2b9",
+        "ondispose": null,
+        "sameDocument": true,
+        "url": "https://y.qq.com/n/ryqq/search?w=%E5%91%A8%E6%9D%B0%E4%BC%A6&t=song&remoteplace=txt.yqq.top"
+    },
+    "oncurrententrychange": null,
+    "onnavigate": null,
+    "onnavigateerror": null,
+    "onnavigatesuccess": null,
+    "transition": null
+}
+location = {
+    "ancestorOrigins": {},
+    "href": "https://y.qq.com/n/ryqq/search?w=%E5%91%A8%E6%9D%B0%E4%BC%A6&t=song&remoteplace=txt.yqq.top",
+    "origin": "https://y.qq.com",
+    "protocol": "https:",
+    "host": "y.qq.com",
+    "hostname": "y.qq.com",
+    "port": "",
+    "pathname": "/n/ryqq/search",
+    "search": "?w=%E5%91%A8%E6%9D%B0%E4%BC%A6&t=song&remoteplace=txt.yqq.top",
+    "hash": ""
+}
+// ....
+
+console.log("zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0");
+console.log(loader_(350).default(t_data));
+
+//zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0
+//zzb5f83fe81ctmp7buyrgfgmht5hfggeb4159a0
+```
+
+
+
+### 3、编写代码
+
+```python
+import time
+
+import execjs
+import requests
+
+# cookies和headers一定要正确才能请求到
+cookies = {
+    # ...
+}
+
+headers = {
+  # ...
+}
+
+# 请求参数
+singer = "周杰伦"
+page_num = 1
+data = '{"comm":{"cv":4747474,"ct":24,"format":"json","inCharset":"utf-8","outCharset":"utf-8","notice":0,"platform":"yqq.json","needNewCode":1,"uin":"1152921504860531892","g_tk_new_20200303":1531704962,"g_tk":1531704962},"req_1":{"method":"DoSearchForQQMusicDesktop","module":"music.search.SearchCgiService","param":{"remoteplace":"txt.yqq.top","searchid":"68939297501935721","search_type":0,"query":"'+singer+'","page_num":'+str(page_num)+',"num_per_page":10}}}'
+
+# 获取sign加密参数
+with open("./loader.js") as f:
+    js_code = f.read()
+
+time_str = round(time.time() * 1000)
+sign = execjs.compile(js_code).call("get_sign", data)
+
+params = {
+    # 时间戳
+    '_': time_str,
+    # 加密参数
+    'sign': sign,
+}
+
+# 这里data要编码
+response = requests.post('https://u.y.qq.com/cgi-bin/musics.fcg', params=params, cookies=cookies, headers=headers, data=data.encode()).json()
+
+print(response)
 ```
 
