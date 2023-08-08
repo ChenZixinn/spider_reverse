@@ -1808,13 +1808,13 @@ print(response)
 
 企查查的加密参数为接口的**请求标头**中的参数，key和value都不是固定的。
 
-![image-20230808211250480](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808211250480.png)
+![image-20230808211250480](./README.assets/image-20230808211250480.png)
 
 #### 2、逆向js
 
 由于这个参数设置了headers的key和value，所以在代码里搜**"headers["****或者**"headers."**找到加密的位置。
 
-![image-20230808211628612](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808211628612.png)
+![image-20230808211628612](./README.assets/image-20230808211628612.png)
 
 加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023-8/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
 
@@ -1832,7 +1832,7 @@ function run(path, tid){}
 
 **tid**：tid在请求的页面中，可以使用正则表达式提取出来。
 
-![image-20230808212453007](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808212453007.png)
+![image-20230808212453007](./README.assets/image-20230808212453007.png)
 
 
 
