@@ -2933,7 +2933,7 @@ window = global;
                 }) : vt = []
             }
             ), {
-                apiName: "other.privacyReport"
+                apiName: "3-other.privacyReport"
             })
         }
         ), 1e3)
@@ -6199,7 +6199,7 @@ window = global;
         if ("function" === typeof n) {
             var o = n.call(e, t);
             if ("object" !== typeof o)
-                throw new TypeError("RegExp exec method returned something other than an Object or null");
+                throw new TypeError("RegExp exec method returned something 3-other than an Object or null");
             return o
         }
         if ("RegExp" !== r(e))

@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
+目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
 
 环境安装：
 
@@ -94,8 +94,6 @@ data = '''{
 print(requests.post(url, headers=headers, data=data).text)
 
 ```
-
-
 
 
 
@@ -1504,7 +1502,7 @@ print(response)
 
 
 
-### 中国五矿（单文件webpack）
+## 中国五矿（单文件webpack）
 
 url：https://ec.minmetals.com.cn/open/home/purchase-info
 
@@ -1633,7 +1631,7 @@ print(response)
 
 
 
-### QQ音乐
+## QQ音乐
 
 url:https://y.qq.com/n/ryqq/search
 
@@ -1758,7 +1756,7 @@ console.log(loader_(350).default(t_data));
 
 
 
-### 3、编写代码
+#### 3、编写代码
 
 ```python
 import time
@@ -1800,3 +1798,42 @@ response = requests.post('https://u.y.qq.com/cgi-bin/musics.fcg', params=params,
 print(response)
 ```
 
+
+
+# 案例_2023-8
+
+## 企查查
+
+#### 1、加密参数
+
+企查查的加密参数为接口的**请求标头**中的参数，key和value都不是固定的。
+
+![image-20230808211250480](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808211250480.png)
+
+#### 2、逆向js
+
+由于这个参数设置了headers的key和value，所以在代码里搜**"headers["****或者**"headers."**找到加密的位置。
+
+![image-20230808211628612](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808211628612.png)
+
+加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023-8/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
+
+#### 3、所需的参数
+
+可以看到最后生成的方法中需要两个参数，一个是**path**，一个是**tid**。
+
+```js
+function run(path, tid){}
+```
+
+
+
+**path**：即请求的路径，例如请求接口：`https://www.qcc.com/api/datalist/mainmember?keyNo=....`，path参数即为`/api/datalist/mainmember?keyNo=....`
+
+**tid**：tid在请求的页面中，可以使用正则表达式提取出来。
+
+![image-20230808212453007](/Users/tzuxin/Library/Application Support/typora-user-images/image-20230808212453007.png)
+
+
+
+至此就可以对企查查的接口进行爬取。
