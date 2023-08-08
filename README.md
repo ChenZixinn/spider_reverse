@@ -1812,7 +1812,7 @@ print(response)
 
 #### 2、逆向js
 
-由于这个参数设置了headers的key和value，所以在代码里搜**"headers["****或者**"headers."**找到加密的位置。
+由于这个参数设置了headers的key和value，所以在代码里搜 **"headers["** 或者 **"headers."** 找到加密的位置。
 
 ![image-20230808211628612](./README.assets/image-20230808211628612.png)
 
