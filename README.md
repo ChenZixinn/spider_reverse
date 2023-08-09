@@ -1810,6 +1810,10 @@ print(response)
 
 ![image-20230808211250480](./README.assets/image-20230808211250480.png)
 
+
+
+
+
 #### 2、逆向js
 
 由于这个参数设置了headers的key和value，所以在代码里搜 **"headers["** 或者 **"headers."** 找到加密的位置。
@@ -1832,7 +1836,13 @@ function run(path, tid){}
 
 **tid**：tid在请求的页面中，可以使用正则表达式提取出来。
 
-![image-20230808212453007](./README.assets/image-20230808212453007.png)
+![image-20230809135628734](./README.assets/image-20230809135628734.png)
+
+
+
+**pid**：就在tid旁边，这个参数放在headers里，key是**x-pid**
+
+![image-20230809135729465](./README.assets/image-20230809135729465.png)
 
 
 
