@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道**
+目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)**
 
 环境安装：
 
@@ -1808,9 +1808,9 @@ print(response)
 
 企查查的加密参数为接口的**请求标头**中的参数，key和value都不是固定的。
 
-![image-20230808211250480](./README.assets/image-20230808211250480.png)
+还有一个参数是**X-Pid**，可以在页面返回的数据中找到。
 
-
+![image-20230811204543466](./README.assets/image-20230811204543466.png)
 
 
 
@@ -1821,6 +1821,8 @@ print(response)
 ![image-20230808211628612](./README.assets/image-20230808211628612.png)
 
 加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023-8/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
+
+
 
 #### 3、所需的参数
 
@@ -1842,8 +1844,153 @@ function run(path, tid){}
 
 **pid**：就在tid旁边，这个参数放在headers里，key是**x-pid**
 
-![image-20230809135729465](./README.assets/image-20230809135729465.png)
-
 
 
 至此就可以对企查查的接口进行爬取。
+
+
+
+## uyanip注册
+
+url：https://www.uyanip.com/register
+
+#### 注册流程
+
+1、接收图片，识别出验证码，拿到Cookies
+
+2、发送短信，拿到token
+
+3、发送注册请求
+
+
+
+#### 请求接口
+
+##### 1、获取图片和Cookies
+
+```python
+def get_img():
+    """
+    获取验证码
+    :return: 返回cookies和验证码
+    """
+    headers = {}  # 省略
+  	response = requests.get('https://api.duyandb.com/auth/register/captcha', headers=headers)
+    print(response.cookies)
+    # 检查响应状态码是否为 200
+    if response.status_code == 200:
+        # 将响应的内容解析为图片
+        image = Image.open(BytesIO(response.content))
+        captcha_code = ocr.classification(image)
+    else:
+        print("请求失败，状态码：", response.status_code)
+        return None
+    # 这里的coockies用于下一次请求
+    return {
+        "cookies":response.cookies, "captcha_code":captcha_code
+    }
+```
+
+##### 2、发送验证码
+
+```python
+
+def send_code(phone_number:str, captcha_code, cookies):
+    """
+    发送短信验证码
+    :param phone_number: 手机号
+    :param captcha_code: 图片验证码
+    :param cookies: 图片验证码拿到的Cookies
+    :return: {'data':'', 'errCode': 0}
+    """
+    """
+    发送验证码
+    :param phone_number: 手机号
+    :return: {'data':'', 'errCode': 0}
+    """
+    headers={}  # 省略
+
+    # 这里传入手机号和图片验证码
+    json_data = {
+        'value': phone_number,
+        'captchaCode': captcha_code,
+    }
+
+    response = requests.post('https://api.duyandb.com/auth/register/smscode', cookies=cookies, headers=headers,
+                             json=json_data)
+    # 返回data和状态码，状态码为0则请求成功
+    return response.json()
+```
+
+
+
+##### 3、发送注册请求
+
+手机验证码发送成功后，就可以请求注册接口了
+
+```python
+
+def register(phone_number:str):
+    """
+    注册
+    :param phone_number: 手机号 
+    :return: 成功或None
+    """
+    headers = {}  # 省略
+    
+    # 获取图片验证码和Cookies
+    img_obj = get_img()
+    if img_obj:
+        # 发送短信，返回token。验证码错误会失败
+        code_obj = send_code(phone_number, img_obj['captcha_code'], img_obj["cookies"])
+        if code_obj["errCode"] != 0:
+            print(code_obj['data'])
+            return None
+        print(f"code_obj:{code_obj}")
+        # 手机验证码
+        phone_code = ''
+        phone_code = input("请输入手机验证码：")
+
+        json_data = {
+            # 这里需要传入短信验证码接口返回的token
+            'vtoken': code_obj['data'],
+            # 手机号
+            'phone': phone_number,
+            # 手机短信验证码
+            'smscode': phone_code,
+            'password': 'mima123456',
+            'confirmPassword': 'mima123456',
+            # 随机用户名
+            'nickname': generate_username(),
+            'pinvitationCode': '',
+            'type': 0,
+        }
+        # 发送注册请求
+        response = requests.put('https://api.duyandb.com/auth/register/submit', headers=headers, json=json_data)
+        # 成功会返回{'errCode':0, 'data': ''}
+        return response.json()
+```
+
+
+
+##### 4、注册
+
+如果你有短信验证码的接口这里可以进行批量注册。另外代码中没有添加代理，如果需要批量注册可能需要增加代理。
+
+```python
+if __name__ == '__main__':
+    result = register('17118060285')
+    if result and result.get('errCode') == 0:
+        print("注册成功")
+    else:
+        print('注册失败，请重试')
+```
+
+
+
+
+
+
+
+
+
