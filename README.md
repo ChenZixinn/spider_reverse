@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)**
+目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 环境安装：
 
@@ -1984,13 +1984,120 @@ if __name__ == '__main__':
         print("注册成功")
     else:
         print('注册失败，请重试')
+
+```
+
+
+
+## 凤凰云智管理平台（逆向登陆）
+
+#### 数据接口
+
+password是加密的
+
+![image-20230817232654341](./README.assets/image-20230817232654341.png)
+
+
+
+#### 加密的位置
+
+使用xhr断点或者堆栈找到加密的位置
+
+![image-20230817232619155](./README.assets/image-20230817232619155.png)
+
+```js
+// 加密的js代码
+var i = r(n(2132));
+i.default.setMaxDigits(130);
+var c = new i.default.RSAKeyPair("10001","", s['prod']);
+i.default.encryptedString(c, encodeURIComponent(e))
+```
+
+下面我们来补全这些代码
+
+
+
+#### 还原js
+
+![image-20230817235447380](./README.assets/image-20230817235447380.png)
+
+
+
+这里的n是加载器，下标2132这个方法就是i。
+
+首先先把加载器的代码拿下来，然后再去找2132对应的方法，把方法放进数组里。
+
+
+
+##### 1、加载器
+
+点击n的位置跳转到代码，前面部分是加载器，后面是所有的方法。这里只拿加载器，就是最开头的部份，后面跟着的数组是方法。
+
+![image-20230817235525704](./README.assets/image-20230817235525704.png)
+
+
+
+
+
+##### 2、方法
+
+下一部是把这个方法里的代码复制到加载器的数组里，
+
+![image-20230817235705203](./README.assets/image-20230817235705203.png)
+
+
+
+```js
+// 全局变量
+var loader;
+// 加载器
+!function(e){
+  // ...
+  // 里面的方法都赋值给了o，所以这里用全局变量接收o
+  loader = o;
+}([
+  // 这里面放方法，这个代码在第二步里找
+  function(e, t) {}
+])
+
+loader(0) // 这里就拿到了n(2132)对应的方法
 ```
 
 
 
 
 
+##### 3、替换掉原来的参数
 
+最终的js代码是这样的。[yuekeyun.js](2023-8/spider_yuekeyun/yuekeyun.js) 
+
+```js
+// 全局变量
+var loader;
+// 加载器
+!function(e){
+  // ...
+  // 里面的方法都赋值给了o，所以这里用全局变量接收o
+  loader = o;
+}([
+  // 这里面放方法，这个代码在第二步里找
+  function(e, t) {}
+])
+
+// 公钥
+s = {
+    "prod": "837ec9791ee734418f44220b56cd22252c53309f59c560ff231d71e2579d38ea7a4408b017b1af85c6683111da151af25dddc53904a01e219bd56495a1add8cb70e54428bb87d95cd40478f6f800414be8a334ac779f4b819ae94fec240dc2ace1f99df64de88eef7bcbde4aabbdeac0e70a55e61331a9ea3d0546fe647977f9",
+}
+
+// loader(0)是RSA加密的函数
+var i = loader(0);
+function get_password(e) {
+    i.setMaxDigits(130);
+    var c = new i.RSAKeyPair("10001", "", s['prod']);
+    // e参数是密码
+    return i.encryptedString(c, encodeURIComponent(e));
+}
+```
 
 
 
