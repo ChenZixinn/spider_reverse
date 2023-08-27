@@ -2,11 +2,13 @@
 
 
 
-本项目记录一些学习爬虫逆向的案例或者资料，仅供学习参考，请勿用于非法用途。
+本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已经爬取：**企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
-环境安装：
+
+
+#### 环境安装：
 
 npm install 
 
@@ -2220,4 +2222,113 @@ function get_password(e) {
 ```
 
 
+
+## boss直聘
+
+
+
+### 接口和加密参数
+
+```python
+# 接口路径
+url = 'https://www.zhipin.com/wapi/zpgeek/search/joblist.json'
+
+cookies = {
+		# 略
+    # __zp_stoken__这个cookies就是加密的参数
+    '__zp_stoken__': 'ad34eWCUTC1I3FyZ7fGIuWAAsARcpQh5BZiZBcEhYbzhQO28Xb3l%2FZkN0Om9sLyV5LXtlQGx3HWUkfTs3LEIocAZwThoHVhsNFVsdeAxUJTtfHCFwXzpxYkR0YGsoCAMyb0JXPz99EG9pPD4%3D',
+}
+
+headers = {
+  # 略
+}
+params = {
+  	# 略
+  	# 关键词
+    'query': 'python',
+    'city': '101280600',
+    'multiSubway': '',
+    # 分页
+    'page': '2',
+    'pageSize': '30',
+}
+
+response = requests.get(url, params=params, cookies=cookies, headers=headers)
+```
+
+
+
+### 逆向js
+
+[js代码](./2023-8/spider_boss/boss_zptoken.js)
+
+##### 1、找js文件
+
+通过关键字搜索 **\__zp_stoken__**，找到生成参数的js。
+
+```js
+// cookies的值
+r = (new e).z(t, parseInt(n) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3)
+```
+
+
+
+##### 2、断点找加密的方法
+
+通过搜索cookies加密的参数可以找到js文件，断点到加密的位置，把js文件复制下来。
+
+![image-20230827145729574](./README.assets/image-20230827145729574.png)
+
+
+
+##### 3、调用的方法
+
+调试后发现是在**window['ABD']\['prototype']**里，最后我们要调用的方法是：
+
+```js
+// seek和ts也在cookies中
+window["ABC"]["prototype"].z(seek, ts)
+```
+
+
+
+![image-20230827150020204](./README.assets/image-20230827150020204.png)
+
+![image-20230827150036055](./README.assets/image-20230827150036055.png)
+
+
+
+##### 4、js执行的问题
+
+执行js的时候发现很多属性没有，这是很多环境不存在导致的，需要把环境补上。具体可查看代码
+
+```js
+const{JSDOM}=require("jsdom");
+const dom = new JSDOM(`<!DOCTYPE html><p>Hello world</p>`, {
+  url: 'https://www.zhipin.com/'
+});
+
+window=dom.window;
+document=window.document;
+navigator=window.navigator; 
+location=window.location; 
+history=window.history; 
+screen=window.screen; 
+```
+
+
+
+##### 5、封装
+
+```js
+/**
+ * 生成zp_token cookies参数
+ * @param sseed cookies中的__zp_sseed__参数
+ * @param sts cookies中的__zp_sts__参数
+ * @returns __zp_token__ __zp_token__参数
+ */
+function get_zp_token(sseed, sts) {
+    return window["ABC"]["prototype"].z(sseed, parseInt(sts) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3)
+}
+```
 
