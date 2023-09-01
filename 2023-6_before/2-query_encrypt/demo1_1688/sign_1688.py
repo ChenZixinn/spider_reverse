@@ -14,7 +14,7 @@ g = "12574478"
 j = f"{token}&{i}&{g}&{str(data)}"
 
 # 使用js文件生成sign
-with open("./h.js", "r", encoding="utf-8") as f:
+with open("h.js", "r", encoding="utf-8") as f:
     js_code = f.read()
 sign = execjs.compile(js_code).call("h", j)
 

@@ -1,5 +1,5 @@
 beautifulsoup4==4.12.2
-ddddocr==1.4.7
+ddddocr==1.4.8
 Pillow==10.0.0
 pkcs7==0.1.2
 pycryptodome==3.18.0

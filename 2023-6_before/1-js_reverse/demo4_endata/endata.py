@@ -13,7 +13,7 @@ data = {
 }
 ori_data = requests.post(url, headers=headers, data=data).text
 
-with open("./endata.js", 'r') as f:
+with open("endata.js", 'r') as f:
     js_code = f.read()
 
 result = execjs.compile(js_code).call("webInstace.shell", ori_data)

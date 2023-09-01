@@ -14,7 +14,7 @@ headers = {
 ori_data = requests.get(url, headers=headers).text
 
 # 打开js文件
-with open("./mohurd.js", "r") as f:
+with open("mohurd.js", "r") as f:
     jscode = f.read()
 
 ctx = execjs.compile(jscode).call('m', ori_data)

@@ -40,7 +40,7 @@ def get_api_key():
 if __name__ == '__main__':
     url = f"https://www.oklink.com/api/explorer/v1/btc/transactionsNoRestrict?t={times}&offset=0&txType=&limit=20&sort="
 
-    with open("./oklink.js") as f:
+    with open("oklink.js") as f:
         js_code = f.read()
 
     # x_apikey = execjs.compile(js_code).call("getApiKey")

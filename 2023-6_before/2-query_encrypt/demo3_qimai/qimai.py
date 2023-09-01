@@ -9,7 +9,7 @@ headers = {
 
 }
 
-with open("./qimai.js") as f:
+with open("qimai.js") as f:
     js_code = f.read()
 
 analysis = execjs.compile(js_code).call("url", url_args)

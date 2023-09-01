@@ -2,7 +2,7 @@
 import execjs
 
 # 定义JavaScript代码
-with open("./ent.js") as f:
+with open("ent.js") as f:
     js_code = f.read()
 #  这里将上述代码粘贴进来
 
