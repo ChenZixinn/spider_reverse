@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 
 
@@ -2331,4 +2331,171 @@ function get_zp_token(sseed, sts) {
     return window["ABC"]["prototype"].z(sseed, parseInt(sts) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3)
 }
 ```
+
+
+
+# 案例_2023-9
+
+## 巨量算数
+
+### 1、接口参数分析
+
+![image-20230901171313113](./README.assets/image-20230901171313113.png)
+
+
+
+- **msToken**: 用于加密的参数，可以在**area**接口中获取
+- **X-Bogus**: 加密生成的参数
+- **_signature**: 加密生成的参数
+
+
+
+### 2、逆向js
+
+##### 2.1 添加XHR断点
+
+可以添加X-Bogus或者__signature，这里以最后一个参数为例：
+
+##### ![image-20230901171837094](./README.assets/image-20230901171837094.png)
+
+
+
+##### 2.2 添加条件断点
+
+这里需要注意是添加到后面的方法上，不要直接添加在断点的位置（**添加到上图中红框黄色箭头的位置**）。
+
+添加条件断点是因为这里会执行比较多的参数，我们只需要x-bogus和signature，根据返回的长度来决定是否debugger。**x-bogus会返回长度28的str，signature是147.**
+
+```js
+// _signature
+_0x2c5e7b['apply'](_0x275c89, _0x301f8b).length === 147
+
+// X-Bogus
+_0x2c5e7b['apply'](_0x275c89, _0x301f8b).length === 28
+```
+
+
+
+##### 2.3 扣js
+
+[巨量.js](2023-9/trendinsight/juliang.js)
+
+断点后我们直接进入方法，在两个断点中可以分别查看看**方法和参数**，将所有代码扣下来，将两个加密的方法用变量接收，并且**补齐环境**，包括**document.cookie**。
+
+```js
+function get_param(msToken, url, body) {
+    /**
+     * 生成请求的参数
+     * @type {string} msToken,X-Bogus,_signature
+     */
+    // body转为str
+    body_str = JSON.stringify(body)
+    xb = xb_func('msToken=' + msToken, body_str)
+    return {
+        'msToken': msToken,
+        'X-Bogus': xb,
+        '_signature': sign_func({
+            'body': body,
+            'url': url + 'msToken=' + msToken + '&X-Bogus=' + xb
+        }, undefined, 'forreal')
+    }
+}
+```
+
+
+
+### 3、构造请求
+
+这里分为两步：
+
+1. 首先是**获取msToken**，在**area**这个接口中，**携带cookie**请求后即可获取；
+2. 其次是接口数据获取，需要将msToken传入js文件中**生成x-bogus参数和signature参数**，然后发起请求。
+
+**tips：**cookie具有时效性，如果请求失效或者signature的值错误，可能是cookie的问题。
+
+[代码：](2023-9/trendinsight/juliang.py)
+
+```python
+import re
+
+import execjs
+import requests
+
+cookies = {
+		# ...
+}
+
+
+def get_ms_token() -> str:
+    """
+    获取msToken参数，需要cookies
+    :return: msToken
+    """
+    headers = {
+        # ...
+    }
+
+    params = {
+        'dates': 'daily-20230831_weekly-20230827_monthly-202307',
+        'area': '["11"]',
+        'category_id': '1',
+    }
+		
+    # 请求area接口，获取msToken
+    response = requests.get('https://trendinsight.oceanengine.com/area', params=params, cookies=cookies,
+                            headers=headers).text
+    if 'msToken' in response:
+        ms_token = re.search(r'msToken=(.*?);', response).group(1)
+        return ms_token
+    else:
+        return ''
+
+
+def get_poi_list() -> dict:
+    """
+    获取数据
+    :return: json格式的数据
+    """
+    # 获取msToken
+    ms_token = get_ms_token()
+    if not ms_token:
+        print("not msToken")
+        return {}
+    headers = {
+        # ...
+    }
+
+    # 请求参数，根据需要调整
+    json_data = {
+			# ...
+    }
+
+    url = 'https://trendinsight.oceanengine.com/api/open/area/get_poi_list'
+
+    # 读取./juliang.js调用get_params方法，获取两个加密参数
+    with open('./juliang.js', 'r') as f:
+        js_code = f.read()
+        ctx = execjs.compile(js_code)
+        params_dict = ctx.call('get_param', ms_token, url, json_data)
+    x_bogus = params_dict['X-Bogus']
+    _signature = params_dict['_signature']
+
+    # 发起请求
+    response = requests.post(
+        f'{url}?msToken={ms_token}&X-Bogus={x_bogus}&_signature={_signature}',
+        cookies=cookies,
+        headers=headers,
+        json=json_data,
+    )
+    return response.json()
+
+
+if __name__ == '__main__':
+    print(get_poi_list())
+
+```
+
+
+
+
 
