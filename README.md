@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 
 
@@ -2496,6 +2496,140 @@ if __name__ == '__main__':
 ```
 
 
+
+
+
+## 极验滑块
+
+url：https://www.geetest.com/demo/slide-float.html
+
+极验3滑块验证码，版本：7.9.1。
+
+### 1、分析各请求
+
+##### 1.1 获取gt、challenge参数：
+
+https://www.geetest.com/demo/gt/register-slide?t=1694237711524
+
+```js
+// 响应
+{
+    "success": 1,
+    "challenge": "18318454a32f0cfd280c5ba9d5f68fcd",
+    "gt": "019924a82c70bb123aae90d483087f94",
+    "new_captcha": true
+}
+```
+
+
+
+##### 1.2 请求c、s参数
+
+https://apiv6.geetest.com/get.php...
+
+```js
+{
+    "status": "success",
+    "data": {
+        "c": [
+            12,
+            58,
+            98,
+            36,
+            43,
+            95,
+            62,
+            15,
+            12
+        ],
+        "s": "61752c3a",
+        // ...
+    }
+}
+```
+
+
+
+##### 1.3 取背景图和各种参数
+
+https://api.geetest.com/get.php
+
+```js
+{
+    "gt": "019924a82c70bb123aae90d483087f94",
+    "challenge": "18318454a32f0cfd280c5ba9d5f68fcd8z",
+    "id": "a18318454a32f0cfd280c5ba9d5f68fcd",
+    "bg": "pictures/gt/cd0bbb6fe/bg/51e3c23b0.jpg",
+    "fullbg": "pictures/gt/cd0bbb6fe/cd0bbb6fe.jpg",
+    "height": 160,
+    "slice": "pictures/gt/cd0bbb6fe/slice/51e3c23b0.png",
+    "api_server": "https://api.geetest.com",
+    "static_servers": [
+        "static.geetest.com/",
+        "dn-staticdown.qbox.me/"
+    ],
+    "c": [
+        12,
+        58,
+        98,
+        36,
+        43,
+        95,
+        62,
+        15,
+        12
+    ],
+    "s": "51363072",
+    "gct_path": "/static/js/gct.b71a9027509bc6bcfef9fc6a196424f5.js"
+    // ...
+}
+```
+
+
+
+### 2、生成w值
+
+##### 2.1 验证码参数
+
+通过轨迹和其他参数最终会生成w值。
+
+![image-20230911225637080](./README.assets/image-20230911225637080.png)
+
+
+
+##### 2.2 找到对应的js
+
+点击验证码会请求js文件，然后搜索w的unicode编码**"/u0077"**，可以找到代码。
+
+![image-20230911230056561](./README.assets/image-20230911230056561.png)
+
+
+
+##### 2.3 关键参数
+
+在这个js里会用到前面接口生成的**c、s、gt、challenge**，还需要**轨迹、滑动时间、滑动距离**。代码比较多比较杂，这里直接展示最终的参数生成代码，只需传入对应的参数。
+
+```js
+function generate_w(params){
+    /**
+     * 生成w, params需要传入distance, passtime, track, c, s, gt, challenge
+     */
+    var u = new U()["encrypt"](rt_)  // 这里的rt是一个随机值，但是需要和下面保持一致
+    o = {
+        "lang": "zh-cn",
+        "userresponse": H(params['distance'], params['challenge']),  // 把滑动距离和challenge传入H函数，得到userresponse
+        "passtime": params['passtime'],  // 滑动时间，要和轨迹里的滑动时间一致
+        "imgload": 155,  // 加载时间，可以是随机值
+        "aa": sign_aaa(params['track'], params['c'], params['s']),  // 传入轨迹、c、s，生成aa
+        "ep": sign_ep(),  // 一些版本号(7.9.1)，时间等信息
+        "h9s9": "1816378497",  // 固定值
+        "rp": md5Hash(params['gt'] + params['challenge'].slice(0, 32) + params['passtime'])  // 传入gt、challenge、passtime，md5生成rp
+    }
+    var l = V['encrypt'](gt['stringify'](o), rt_)
+    var h = m["$_FCp"](l)
+    return h + u
+}
+```
 
 
 
