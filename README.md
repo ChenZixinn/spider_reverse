@@ -16,16 +16,7 @@ pip install -r requirements.txt
 
 
 
-## 一、js逆向
-
-#### 定位数据接口的方式：
-
-- 静态页面字体加密：HTML实体编码
-- 数据加密：动态数据 -> ajax **JSON.parse**
-
-
-
-### 1、whggzy（接口参数）
+### 一、whggzy（接口参数）
 
 #### 1.1 搜索响应数据找到接口
 
@@ -101,7 +92,7 @@ print(requests.post(url, headers=headers, data=data).text)
 
 
 
-### 2、企名科技(数据加密)
+### 二、企名科技(数据加密)
 
 url: https://www.qimingpian.com/finosda/project/pinvestment
 
@@ -168,7 +159,7 @@ print(f"type:{type(ctx)}")
 
 
 
-### 3、建筑(AES)
+### 三、建筑(AES)
 
 url： https://jzsc.mohurd.gov.cn/data/company
 
@@ -221,7 +212,7 @@ function m(t) {
 
 
 
-### 4、endata（js混淆）
+### 四、endata（js混淆）
 
 url: https://www.endata.com.cn/BoxOffice/BO/Year/index.html
 
@@ -300,21 +291,17 @@ print(result)
 
 
 
-
-
-## 二、请求参数加密
-
-### 1、1688
+### 五、1688
 
 url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019category.1.6e517a6exMGJcG&mainId=10166
 
-#### 1.1 查看接口
+#### 5.1 查看接口
 
 有加密参数，找这个参数的js文件
 
 ![image-20230602100140806](./README.assets/image-20230602100140806.png)
 
-#### 1.2 搜索加密参数
+#### 5.2 搜索加密参数
 
 **sign参数的组成：**token & 时间戳 & g & 请求参数，数据均没有变化
 
@@ -324,7 +311,7 @@ url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019cate
 
 
 
-#### 1.3 得到sign
+#### 5.3 得到sign
 
 ```python
 # 请求的参数
@@ -346,7 +333,7 @@ sign = execjs.compile(js_code).call("h", j)
 
 
 
-#### 1.4 访问接口
+#### 5.4 访问接口
 
 ```python
 # 设置header和params
@@ -371,13 +358,13 @@ print(requests.get(url, headers=headers, params=params).text)
 
 
 
-### 2、cninfo TODO
+### 六、cninfo TODO
 
 url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 
 
-#### 2.1 加密字段
+#### 6.1 加密字段
 
 为base64加密
 
@@ -385,7 +372,7 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 
 
-#### 2.2 搜索js文件
+#### 6.2 搜索js文件
 
 通过标头名或者路径搜索，找到js文件；该方法使用了js混淆。
 
@@ -393,19 +380,19 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 
 
-### 3、七麦数据（接口隐藏、js混淆）
+### 七、七麦数据（接口隐藏、js混淆）
 
 url: https://www.qimai.cn/rank
 
 
 
-#### 3.1找到接口
+#### 7.1找到接口
 
 通过英文搜索到接口（中文有编码）
 
 ![image-20230604223717940](./README.assets/image-20230604223717940.png)
 
-#### 3.2 搜索js文件
+#### 7.2 搜索js文件
 
 ##### 找到js文件
 
@@ -425,7 +412,7 @@ url: https://www.qimai.cn/rank
 
 
 
-#### 3.3 编写js
+#### 7.3 编写js
 
 js使用了js混淆，需要根据调试根据判断使用了什么方法，具体请看注解
 
@@ -514,17 +501,17 @@ console.log(url(pass));
 
 
 
-### 4、oklink
+### 八、oklink
 
-#### 4.1 查看接口
+#### 8.1 查看接口
 
-![image-20230605145711223](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605145711223.png)
-
-
+![image-20230605145711223](./README.assets/image-20230605145711223.png)
 
 
 
-#### 4.2 搜索js文件
+
+
+#### 8.2 搜索js文件
 
 
 
@@ -532,11 +519,11 @@ console.log(url(pass));
 
 找到方法，再进行搜索
 
-![image-20230605150642725](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605150642725.png)
+![image-20230605150642725](./README.assets/image-20230605150642725.png)
 
 
 
-#### 4.3 js实现
+#### 8.3 js实现
 
 找到webpack打包的代码，改写后补齐所有方法
 
@@ -617,7 +604,7 @@ getApiKey()
 
 
 
-#### 4.4 python代码实现
+#### 8.4 python代码实现
 
 ```python
 
@@ -653,35 +640,35 @@ def get_api_key():
 
 
 
-### 5、去哪儿机票服务
+### 九、去哪儿机票服务
 
 url:https://m.flight.qunar.com/h5/flight/
 
-#### 5.1、接口的加密
+#### 8.1、接口的加密
 
-1、请求参数：**\_\_m\_\_**
+8.1.1、请求参数：**\_\_m\_\_**
 
-![image-20230605172141802](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605172141802.png)
+![image-20230605172141802](./README.assets/image-20230605172141802.png)
 
-2、请求头参数：**键值对加密**
+8.1.2、请求头参数：**键值对加密**
 
-![image-20230605172331402](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605172331402.png)
+![image-20230605172331402](./README.assets/image-20230605172331402.png)
 
-#### 5.2、请求参数
+#### 8.2、请求参数
 
-##### 通过js查找算法	
+##### 8.2.1 通过js查找算法	
 
 f()为**md5**加密
 
-![image-20230605223339438](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605223339438.png)
+![image-20230605223339438](./README.assets/image-20230605223339438.png)
 
 
 
 u()为**SHA1**加密
 
-![image-20230605223535368](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230605223535368.png)
+![image-20230605223535368](./README.assets/image-20230605223535368.png)
 
-##### js代码解析
+##### 8.2.2 js代码解析
 
 ```js
 // 所有方法
@@ -759,7 +746,7 @@ function encryptToken(t) {
 
 
 
-##### python生成该参数
+##### 8.2.3 python生成该参数
 
 根据前面解析js代码，得到m参数的生成逻辑
 
@@ -820,9 +807,9 @@ print(get_m())
 
 
 
-#### 5.3、请求头参数
+#### 8.3、请求头参数
 
-##### js代码解析
+##### 8.3.1 js代码解析
 
 ```js
 // 生成key的方法，传入的参数是时间戳
@@ -853,7 +840,7 @@ function getToken() {
 }
 ```
 
-##### python实现
+##### 8.3.2 python实现
 
 ```python
 def get_random_key(t):
@@ -882,27 +869,27 @@ def get_headers():
 
 
 
-### 6、美团
+### 十、美团
 
 url: https://gz.meituan.com/meishi/
 
-#### 6.1、接口的加密
+#### 10.1、接口的加密
 
 _token为加密参数。
 
-![image-20230609204919138](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230609204919138.png)
+![image-20230609204919138](./README.assets/image-20230609204919138.png)
 
 
 
-#### 6.2、查找js
+#### 10.2、查找js
 
 查找到token的生成位置，找到加密的方法
 
-![image-20230609210113287](/Users/chenzixin/Library/Mobile Documents/com~apple~CloudDocs/Documents/Code/python/spider_reverse/README.assets/image-20230609210113287.png)
+![image-20230609210113287](./README.assets/image-20230609210113287.png)
 
 
 
-#### 6.3、生成参数
+#### 10.3、生成参数
 
 _token参数为iP类进行加密后得到的，但目前只能得出iP的sign参数，对iP进行加密后没办法得到最终的值，**如果你知道怎么做欢迎提交issue给我**。
 
@@ -998,50 +985,26 @@ iP = {
 
 
 
-## 三、其他
-
-### 1、空气质量指数（反debug）
-
-url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
-
-#### 1.1 反debug
-
-##### 1.1.1 跳过debug
-
-![image-20230622123802952](./README.assets/image-20230622123802952.png)
-
-##### 1.1.2 弹出开发者工具
-
-![image-20230622124037862](./README.assets/image-20230622124037862.png)
-
-#### 1.2 请求参数解析
-
-通过js生产请求参数
-
- [aqi.js](other/demo1_aqi/aqi.js) 
-
-![image-20230705220910980](./README.assets/image-20230705220910980.png)
 
 
-
-### 2、天安财险
+### 十一、天安财险
 
 ![image-20230705221116122](./README.assets/image-20230705221116122.png)
 
 - 完成登陆请求中的json_key参数加密方法
 - 解析返回的接口
 
- [tianaw.js](other/demo2_tianaw/tianaw.js)
+ [tianaw.js](2023-6_before/tianaw.js)
 
 
 
-### 3、企知道（2023-7-23：反debug、AES加密、逆向）
+### 十二、企知道（2023-7-23：反debug、AES加密、逆向）
 
 url：https://patents.qizhidao.com/
 
 
 
-#### 3.1 反debug
+#### 12.1 反debug
 
 这个网站的反debug是带参数的，直接设置跳过会导致返回不了结果卡死。需要通过脚本返回空的值，注意：需要等页面加载后再执行。
 
@@ -1059,7 +1022,7 @@ Function.prototype.constructor = function (a) {
 
 
 
-#### 3.2、构造请求接口
+#### 12.2、构造请求接口
 
 复制接口的cURL到https://curlconverter.com/自动构造，代码有点长这里只放片段：
 
@@ -1097,9 +1060,9 @@ response = requests.post(
 
 
 
-#### 3.3 解密
+#### 12.3 解密
 
-##### 3.3.1 参数解释
+##### 12.3.1 参数解释
 
 **data1**：这个是加密后的参数，需要解密。AES加密
 
@@ -1107,7 +1070,7 @@ response = requests.post(
 
 
 
-##### 3.3.2 查找加密js
+##### 12.3.2 查找加密js
 
 - 搜索”encrypt“
 
@@ -1121,7 +1084,7 @@ response = requests.post(
 
 
 
-##### 3.3.3 断点调试
+##### 12.3.3 断点调试
 
 ![image-20230723120510583](./README.assets/image-20230723120510583.png)
 
@@ -1147,7 +1110,7 @@ _0xecb012 = function(_0x23e639, _0x5b5a7f) {
 
 ![image-20230723121116914](./README.assets/image-20230723121116914.png)
 
-#### 3.4  构造解密函数
+#### 12.4  构造解密函数
 
 ```python
 def AES_decrypt(data, hasUse:int):
@@ -1166,7 +1129,7 @@ def AES_decrypt(data, hasUse:int):
 
 
 
-##### 3.5 结果
+#### 12.5 结果
 
 [完整代码](./other/demo3_qizhidao/crawler_qizhidao.py)
 
@@ -1174,11 +1137,37 @@ def AES_decrypt(data, hasUse:int):
 
 
 
-# 案例_2023-7（TODO）
+### 十三、空气质量指数（反debug）
+
+url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
+
+#### 13.1 反debug
+
+##### 13.1.1 跳过debug
+
+![image-20230622123802952](./README.assets/image-20230622123802952.png)
+
+##### 13.1.2 弹出开发者工具
+
+![image-20230622124037862](./README.assets/image-20230622124037862.png)
+
+#### 13.2 请求参数解析
+
+通过js生产请求参数
+
+ [aqi.js](2023-6_before/aqi.js) 
+
+![image-20230705220910980](./README.assets/image-20230705220910980.png)
 
 
 
-## 阿里系cookie加密（acw_sc__v2 ）
+
+
+# 案例_2023-7
+
+
+
+## 一、阿里系cookie加密（acw_sc__v2 ）
 
 #### 1、请求
 
@@ -1190,7 +1179,7 @@ def AES_decrypt(data, hasUse:int):
 
 #### 2、查找js代码
 
-##### 打断点，查看堆栈
+##### 2.1 打断点，查看堆栈
 
 进入debug，可以看到调用的位置，打断点调试，**进入堆栈中的方法**。
 
@@ -1198,7 +1187,7 @@ def AES_decrypt(data, hasUse:int):
 
 
 
-##### 找到参数
+##### 2.2 找到参数
 
 参数是**arg2**，查找这个参数。
 
@@ -1206,7 +1195,7 @@ def AES_decrypt(data, hasUse:int):
 
 
 
-##### 找生成参数的js代码
+##### 2.3 找生成参数的js代码
 
 返回原代码，找到生成arg2的代码，把混淆的代码还原。通过对比，只有arg1值是不固定的，在第一次请求中就包含了这个值，通过正则提取，传入js代码里生成就可以得到cookie。
 
@@ -1309,7 +1298,7 @@ print(response)
 
 
 
-## 产业政策大数据平台（带参数的反debug、进制流加密）
+## 二、产业政策大数据平台（带参数的反debug、进制流加密）
 
 http://www.spolicy.com/
 
@@ -1504,7 +1493,7 @@ print(response)
 
 
 
-## 中国五矿（单文件webpack）
+## 三、中国五矿（单文件webpack）
 
 url：https://ec.minmetals.com.cn/open/home/purchase-info
 
@@ -1633,7 +1622,7 @@ print(response)
 
 
 
-## QQ音乐
+## 四、QQ音乐
 
 url:https://y.qq.com/n/ryqq/search
 
@@ -1804,7 +1793,7 @@ print(response)
 
 # 案例_2023-8
 
-## 企查查
+## 一、企查查
 
 #### 1、加密参数
 
@@ -1972,7 +1961,7 @@ if __name__ == '__main__':
 
 
 
-## uyanip注册
+## 二、uyanip注册
 
 url：https://www.uyanip.com/register
 
@@ -2111,7 +2100,7 @@ if __name__ == '__main__':
 
 
 
-## 凤凰云智管理平台（逆向登陆）
+## 三、凤凰云智管理平台（逆向登陆）
 
 #### 数据接口
 
@@ -2223,7 +2212,7 @@ function get_password(e) {
 
 
 
-## boss直聘
+## 四、boss直聘
 
 
 
@@ -2336,7 +2325,7 @@ function get_zp_token(sseed, sts) {
 
 # 案例_2023-9
 
-## 巨量算数
+## 一、巨量算数
 
 ### 1、接口参数分析
 
@@ -2499,7 +2488,7 @@ if __name__ == '__main__':
 
 
 
-## 极验滑块
+## 二、极验滑块
 
 url：https://www.geetest.com/demo/slide-float.html
 
@@ -2649,3 +2638,54 @@ function generate_w(params){
 
 
 
+## 三、网上房地产（瑞数4）
+
+url：http://www.fangdi.com.cn/
+
+### 1、 请求流程
+
+##### 第一次请求：
+
+返回名为**"...80S"**的cookie和**js代码**。
+
+
+
+##### 第二次请求：
+
+携带**"...80S"**cookie和第一次请求的js代码生成的**"...80T"**cookie发起请求
+
+
+
+### 2、js逆向
+
+#### 2.1 定位代码
+
+断点在vm代码中，堆栈上就有生成代码的位置。![image-20230914222352296](./README.assets/image-20230914222352296.png)
+
+
+
+```js
+/*
+* _$ws = eval
+* _$Fu = window
+* _$Z_ = js代码
+*/
+ret = _$ws.call(_$Fu, _$Z_);
+```
+
+
+
+#### 2.2 定位cookie生成的位置
+
+属性名都存储在一个数组中，在生成的js代码中可以看到大量相同的数组变量。例如**_$hi[40]**，里面存储了所有的变量。
+
+```js
+_$hi.indexOf('cookie')
+// >> 40
+```
+
+所以_$hi[40]是cookie，搜索这个变量：
+
+![image-20230914223110012](./README.assets/image-20230914223110012.png)
+
+跟栈查看生成cookie的代码。**！！！注意！！！**第一次生成的cookie不是真实的cookie（伪cookie），要跟栈第二次生成的cookie。

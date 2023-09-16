@@ -3,15 +3,13 @@ import re
 import execjs
 import requests
 
-
-# TODO 补充cookies
 cookies = {
-    'x-jupiter-uuid': '',
-    'passport_csrf_token': '',
-    'passport_csrf_token_default': '',
-    'tt_scid': '',
-    'msToken': '',
-    '_csrf_token': '',
+    'x-jupiter-uuid': '1693558439394154',
+    'passport_csrf_token': '0a41ea3b44bd033ef1e823ffa9112f90',
+    'passport_csrf_token_default': '0a41ea3b44bd033ef1e823ffa9112f90',
+    'tt_scid': 'MyHL03hKf14m8ZilNFlF3pgpjx8Y.8pQtmKZIoH0eepE7ZeM3LGV9WKgv3KdN7cr5382',
+    'msToken': '_Kxm05H3L2pUqh4Ri-PSa2ciLgvaopNqTRdq6iG_lYEaYt4SOgSM_tv8MzHrptcNgM4H9nl5w_xnFx6j1OUFIyvPm7w0dtN3gSxITHedK0Xhwg3xqFFvio9u0i5MOd4=',
+    '_csrf_token': 'bf9QPxmGU8Ufaaes_FNGrmrd',
 }
 
 

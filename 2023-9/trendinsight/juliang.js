@@ -3292,8 +3292,8 @@ body = {
     "page": "1"
 }
 
-// TODO 补充cookie
-document.cookie = ''
+document.cookie = 'passport_csrf_token=87fa372c92d204ef90262dc12d33180e; passport_csrf_token_default=87fa372c92d204ef90262dc12d33180e; ttcid=5e88369f6c324269bc61acb68e46737a21; Hm_lvt_c36ebf0e0753eda09586ef4fb80ea125=1689306725,1689322042; Hm_lpvt_c36ebf0e0753eda09586ef4fb80ea125=1689326073; msToken=T6uTnQKuhCqY6OAixvc5Jcms1e1fzF87alPMp6qBQNp7hObhZg2hpzsUZwRWH9xggDMW9jSCgON5fU6muVdcizPTroC7au-MfKWMHHMdsWXo_-MZsJBlmkpx3BLEfQ==; tt_scid=hVzHvyAXoZbkCFDhonP1eDXzlHwuo1YvoqYQG8AyBjGp9pKGMPR38RiKcn8Yzt1p62d2; _csrf_token=YHCWZQM94HTk_BvmvAI1G4WV; msToken=vklPpwML_Fza86yWo9hA8kE5pBbnK2IGl_iJSIMYcwGZYz6xsSbtI7KxCJLn-ird41G82qJhOPE6fFWM7O_GdxB0WqMzCGyYZQHokc6pFMdxc_saxQC9qXCJUOatIw==\n'
+
 
 function get_param(msToken, url, body) {
     /**
