@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 
 
@@ -2638,54 +2638,81 @@ function generate_w(params){
 
 
 
-## 三、网上房地产（瑞数4）
+## 三、加速乐
 
-url：http://www.fangdi.com.cn/
+url：aHR0cHM6Ly9iZWlhbi5taWl0Lmdvdi5jbi9pbmRleCMvSW50ZWdyYXRlZC9pbmRleA
 
-### 1、 请求流程
+### 1、分析请求
 
-##### 第一次请求：
+index页面一共会访问三次
 
-返回名为**"...80S"**的cookie和**js代码**。
+#### 1.1 第一次请求
 
+返回一段js代码，会生成**__jsl_clearance_s**的cookie参数。
 
-
-##### 第二次请求：
-
-携带**"...80S"**cookie和第一次请求的js代码生成的**"...80T"**cookie发起请求
+请求中会返回**__jsluid_s**的cookie，可以使用session或者将这个值保存。
 
 
 
-### 2、js逆向
+#### 1.2 第二次请求
 
-#### 2.1 定位代码
+携带前面生成的两个cookie参数，返回一段加密js代码。
 
-断点在vm代码中，堆栈上就有生成代码的位置。![image-20230914222352296](./README.assets/image-20230914222352296.png)
+代码使用了ob混淆，可以使用在线工具还原。https://ob.nightteam.cn/
 
 
+
+一共有三份代码，分别是**sha1、sha256、md5**加密，将加密部分抽离即可。
+
+
+
+js代码最后有一个json格式的参数，加密时需要用到，可以使用正则提取。
+
+**ha**参数就是加密的方式。
+
+
+
+#### 1.3 第三次请求
+
+携带第二次js代码加密生成的cookie就可以获取到数据。
+
+
+
+### 2、代码还原
+
+使用chrome本地替换的方式对代码进行调试，还原过程比较简单。因为有三份加密代码，所以要将代码封装起来用参数判断，最后代码如下：
 
 ```js
-/*
-* _$ws = eval
-* _$Fu = window
-* _$Z_ = js代码
-*/
-ret = _$ws.call(_$Fu, _$Z_);
+_0x8b2003 = new Date(); 
+function hash_md5(_0x4838bf){}
+function hash_sha256(_0x14757c){}
+function hash_sha1(_0xa1962c){}
+
+
+function get_cookie(data) {
+    _0x190080 = data
+    // 判断加密参数
+    if (data['ha']=='md5') {
+        hash = hash_md5
+    }else if (data['ha']=='sha1') {
+        hash = hash_sha1
+    }else if (data['ha']=='sha256') {
+        hash = hash_sha256
+    }else{
+        throw new Error('hash not found')
+    }
+
+    function _0x247acb(_0x315328, _0x4b6f80) {
+			// ... 略
+      if (hash(_0x4e03cb) == _0x315328) {
+        return [_0x4e03cb, new Date() - _0x8b2003];
+      }
+
+    }
+    
+    var cookie_value = _0x247acb(_0x190080['ct'], _0x190080["bts"]);
+    
+    return cookie_value
+}
 ```
 
-
-
-#### 2.2 定位cookie生成的位置
-
-属性名都存储在一个数组中，在生成的js代码中可以看到大量相同的数组变量。例如**_$hi[40]**，里面存储了所有的变量。
-
-```js
-_$hi.indexOf('cookie')
-// >> 40
-```
-
-所以_$hi[40]是cookie，搜索这个变量：
-
-![image-20230914223110012](./README.assets/image-20230914223110012.png)
-
-跟栈查看生成cookie的代码。**！！！注意！！！**第一次生成的cookie不是真实的cookie（伪cookie），要跟栈第二次生成的cookie。
