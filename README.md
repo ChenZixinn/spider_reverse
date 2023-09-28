@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**rpc实现解密、工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 
 
@@ -2714,5 +2714,105 @@ function get_cookie(data) {
     
     return cookie_value
 }
+```
+
+
+
+## 四、rpc实现js解密
+
+### 1、介绍
+
+rpc实现js解密的思路即在浏览器和本地之间实现websocket通信，本地远程调用浏览器的方法，返回函数的结果（加密函数等），即可获取页面的加密参数。
+
+使用此方法可以快速解决部分反爬的问题，省去了扣js、补环境等操作。
+
+
+
+### 2、实现步骤
+
+##### 2.1 定义方法
+
+**示例网站（Base64）：**aHR0cDovL3d3dy5mYW5nZGkuY29tLmNuL3NlcnZpY2UvYnVsbGV0aW5fbGlzdC5odG1sP3R5cGVhPTNiODgwMzdiYjhiM2Y5MDgmbmFtZT0lRTglQTElOEMlRTQlQjglOUElRTUlOEElQTglRTYlODAlODE=
+
+
+
+在浏览器终端，通过断点调试的方式找到方法，然后将加密方法定义到windows中，方便调用。
+
+```js
+windows.my_crypto = _$vQ; // _$vQ为加密的方法，需要一个参数
+```
+
+![image-20230928133628611](./README.assets/image-20230928133628611.png)
+
+
+
+##### 2.2 浏览器嵌入服务端代码
+
+在终端中执行或者使用代码段等方式嵌入代码。
+
+```js
+!(function () {
+    // 监听端口
+    var ws = new WebSocket("ws://127.0.0.1:5678");  // 自定义端口
+
+    ws.onmessage = function (evt) {
+        console.log("receive msg: " + evt.data);
+        // 退出
+        if (evt.data === "quit") {
+            ws.close();
+        } else {
+            // 调用方法，此处的my_crypto改为定义的函数名
+            ws.send(my_crypto(evt.data))
+        }
+    };
+})()
+```
+
+
+
+
+
+##### 2.3 python客户端调用
+
+```python
+import sys
+import asyncio
+import websockets
+
+
+async def receive_massage(websocket):
+    while True:
+        # 输入参数
+        send_text = input("Enter param please: ")
+        if send_text == "quit":
+            await websocket.send(send_text)
+            await websocket.close()
+            print('quit')
+            sys.exit()
+        else:
+            # 发送参数
+            await websocket.send(send_text)
+            # 返回结果
+            response_text = await websocket.recv()
+            print("\n result：", response_text)
+
+
+start_server = websockets.serve(receive_massage, '127.0.0.1', 5678)  # 自定义端口
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
+```
+
+
+
+
+
+##### 2.4 结果
+
+输入参数，浏览器调用方法执行函数，返回结果
+
+```
+Enter param please: hello
+
+result： http://www.xxxxxxx.com.cn/xxxxxx/hello?MmEwMD=4PCeybQd55uKYvUSSmDMRog5lWDWPHMOxmxIXWJlR55hSD_g1sJthJJJiTjbRm686KiRBYNY41.hVzO_6f1JmHlRl9d3h9HIgACnzKG5pcDI3NVYvoLoFjC2V.EolPuiI5rUi03HA1C32CKC2JMoteoVc.0IFoO_YL9_nSTo7I4jeEIObQr4XNjytzCPwl2C8ydfVBETAIdAiT5_2gAHrTUReojI7O.lr50sXQfusIkswqG1.4byu903XQju.VACsrgydmKPmXAQCQXQ7hfZjDwMS_UrVCB_pZptj.BJyDIK2w5HpCjxvBYYlcV5cfsI5JYThkZ2C8ANvIhOhtD1Dw6esCSVnc_F1YeHilQcqen9Gn9SSa.wB92txGz_rucFEE2a.oLL3XaRl7WFExc0suFrQwy.bqaxIhwKpbb9pLcPJX9UFu6PES_oM6_MPCwQrrvz
 ```
 
