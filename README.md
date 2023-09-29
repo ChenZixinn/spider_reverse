@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**rpc实现解密、工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**同花顺、rpc实现解密、工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
 
 
 
@@ -2816,3 +2816,132 @@ Enter param please: hello
 result： http://www.xxxxxxx.com.cn/xxxxxx/hello?MmEwMD=4PCeybQd55uKYvUSSmDMRog5lWDWPHMOxmxIXWJlR55hSD_g1sJthJJJiTjbRm686KiRBYNY41.hVzO_6f1JmHlRl9d3h9HIgACnzKG5pcDI3NVYvoLoFjC2V.EolPuiI5rUi03HA1C32CKC2JMoteoVc.0IFoO_YL9_nSTo7I4jeEIObQr4XNjytzCPwl2C8ydfVBETAIdAiT5_2gAHrTUReojI7O.lr50sXQfusIkswqG1.4byu903XQju.VACsrgydmKPmXAQCQXQ7hfZjDwMS_UrVCB_pZptj.BJyDIK2w5HpCjxvBYYlcV5cfsI5JYThkZ2C8ANvIhOhtD1Dw6esCSVnc_F1YeHilQcqen9Gn9SSa.wB92txGz_rucFEE2a.oLL3XaRl7WFExc0suFrQwy.bqaxIhwKpbb9pLcPJX9UFu6PES_oM6_MPCwQrrvz
 ```
 
+
+
+## 五、同花顺（hook cookie、补环境）
+
+url：aHR0cDovL3EuMTBqcWthLmNvbS5jbi8=
+
+### 1、hook cookie
+
+hook cookie的方式有很多，油猴、代码注入等，这一次使用的工具是[v_jstools](https://github.com/cilame/v_jstools)，后面补环境的时候也是用它。
+
+当然你也可以使用其他的方式，hook的js代码：
+
+
+
+##### 1.1 hook 代码
+
+```js
+(function() {
+    // 严谨模式 检查所有错误
+    'use strict';
+    // document 为要hook的对象 这里是hook的cookie
+	var cookieTemp = "";
+    Object.defineProperty(document, 'cookie', {
+		// hook set方法也就是赋值的方法
+		set: function(val) {
+				// 这样就可以快速给下面这个代码行下断点
+				// 从而快速定位设置cookie的代码
+				console.log('Hook捕获到cookie设置->', val);
+                debugger;
+				cookieTemp = val;
+				return val;
+		},
+		// hook get 方法也就是取值的方法
+		get: function()
+		{
+			return cookieTemp;
+		}
+    });
+})();
+```
+
+
+
+##### 1.2 跟栈
+
+看到这个值是**v**的时候就是我们的目标cookie了，往上跟栈找到它的代码，就在如下的位置。
+
+![image-20230929142319248](./README.assets/image-20230929142319248.png)
+
+
+
+最终会看到这个方法，它就是生成cookie的：
+
+```js
+var TOKEN_SERVER_TIME = 1695968000.498;
+
+!function(n, t) {
+  // .... 省略
+  function O() {
+    S[R]++,
+      S[p] = Jn.serverTimeNow(),
+      S[d] = Jn.timeNow(),
+      S[B] = Vn,
+      S[I] = nt.getMouseMove(),
+      S[y] = nt.getMouseClick(),
+      S[_] = nt.getMouseWhell(),
+      S[C] = nt.getKeyDown(),
+      S[E] = nt.getClickPos().x,
+      S[A] = nt.getClickPos().y;
+    var n = S.toBuffer();
+    return zn.encode(n)
+  }
+  // ....
+}(/* ... */)
+```
+
+
+
+把上述文件的js代码全部复制，把加密方法用全局变量接收：
+
+```js
+var Heixin;
+/*
+在上述代码中把加密方法赋值给全局变量
+Heixin = O
+*/
+
+function get_v(){
+    return Hexin()
+}
+```
+
+这里如果运行，会发现有很多环境没有。下一步开始补环境。
+
+
+
+### 2、补环境
+
+补环境我们用v_jstools工具来补。安装在开头的超链接中，clone后拖到扩展中心即可（开发者模式）。
+
+
+
+#### 2.1 配置工具
+
+##### 2.1.1 功能开关按如下配置打开：
+
+![image-20230929143021930](./README.assets/image-20230929143021930.png)
+
+
+
+##### 2.1.2 配置页面
+
+点击工具，点击打开配置页面，然后勾选如下配置：
+
+![image-20230929143227611](./README.assets/image-20230929143227611.png)
+
+
+
+##### 2.1.3 生成环境
+
+先清空cookie，然后打开开发者工具，刷新页面。控制台应该会有很多输出，打开扩展工具菜单，点击生成临时环境，即可复制环境代码，粘贴到最开始的代码上方即可。
+
+
+
+### 3、发起请求
+
+加密的cookie在cookies中，也在名为hexin-x的headers参数中，请求时带上即可。
+
+请求的代码就不便展示啦....
