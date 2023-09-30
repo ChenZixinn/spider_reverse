@@ -4,11 +4,13 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**微信小程序（反编译调试）、同花顺、rpc实现解密、工业和信息化部政务服务平台(加速乐)、极验滑块验证码、巨量算数、Boss直聘、企查查、中国五矿、qq音乐、产业政策大数据平台、企知道、天眼查、雪球网、1688、七麦数据、whggzy、企名科技、mohurd、艺恩数据、欧科云链(oklink)、企知道、度衍(uyan)、凤凰云智影院管理平台**
+目前已完成：**[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
+
+点击以上链接可跳转到对应文档位置，代码路径格式为**"月份/网站名称/"**。
 
 
 
-#### 环境安装：
+### 环境安装：
 
 npm install 
 
@@ -16,7 +18,7 @@ pip install -r requirements.txt
 
 
 
-### 一、whggzy（接口参数）
+### <span id='whggzy'>一、whggzy（接口参数）</span>
 
 #### 1.1 搜索响应数据找到接口
 
@@ -92,7 +94,7 @@ print(requests.post(url, headers=headers, data=data).text)
 
 
 
-### 二、企名科技(数据加密)
+### <span id='qiming'>二、企名科技(数据加密)</span>
 
 url: https://www.qimingpian.com/finosda/project/pinvestment
 
@@ -159,7 +161,7 @@ print(f"type:{type(ctx)}")
 
 
 
-### 三、建筑(AES)
+### <span id='mohurd'>三、全国建筑市场监管公告平台</span>
 
 url： https://jzsc.mohurd.gov.cn/data/company
 
@@ -212,7 +214,7 @@ function m(t) {
 
 
 
-### 四、endata（js混淆）
+### <span id='endata'>四、endata（js混淆）</span>
 
 url: https://www.endata.com.cn/BoxOffice/BO/Year/index.html
 
@@ -291,7 +293,7 @@ print(result)
 
 
 
-### 五、1688
+### <span id='1688'>五、1688</span>
 
 url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019category.1.6e517a6exMGJcG&mainId=10166
 
@@ -380,7 +382,7 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 
 
-### 七、七麦数据（接口隐藏、js混淆）
+### <span id='qimai'>七、七麦数据</span>
 
 url: https://www.qimai.cn/rank
 
@@ -501,7 +503,7 @@ console.log(url(pass));
 
 
 
-### 八、oklink
+### <span id='oklink'>八、oklink</span>
 
 #### 8.1 查看接口
 
@@ -998,7 +1000,7 @@ iP = {
 
 
 
-### 十二、企知道（2023-7-23：反debug、AES加密、逆向）
+### <span id='qizhidao'>十二、企知道</span>
 
 url：https://patents.qizhidao.com/
 
@@ -1167,9 +1169,9 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
-## 一、阿里系cookie加密（acw_sc__v2 ）
+## <span id='xueqiu'>一、雪球网-阿里系cookie加密（acw_sc__v2 ）</span>
 
-#### 1、请求
+### 1、请求
 
 有两次请求，第一次获取js代码，第二次通过代码生成参数发送请求
 
@@ -1177,9 +1179,9 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
-#### 2、查找js代码
+### 2、查找js代码
 
-##### 2.1 打断点，查看堆栈
+#### 2.1 打断点，查看堆栈
 
 进入debug，可以看到调用的位置，打断点调试，**进入堆栈中的方法**。
 
@@ -1187,7 +1189,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
-##### 2.2 找到参数
+#### 2.2 找到参数
 
 参数是**arg2**，查找这个参数。
 
@@ -1195,7 +1197,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
-##### 2.3 找生成参数的js代码
+#### 2.3 找生成参数的js代码
 
 返回原代码，找到生成arg2的代码，把混淆的代码还原。通过对比，只有arg1值是不固定的，在第一次请求中就包含了这个值，通过正则提取，传入js代码里生成就可以得到cookie。
 
@@ -1249,7 +1251,7 @@ console.log(get_cookie('E7FC4E89FD5A4E550E19A8BE2061BD16BE4C0DB3'));
 
 
 
-#### 3、发起请求、生成cookie
+### 3、发起请求、生成cookie
 
 [代码](2023-7/day2_cookie加密等/spider_xueqiu/ali.py)
 
@@ -1298,13 +1300,13 @@ print(response)
 
 
 
-## 二、产业政策大数据平台（带参数的反debug、进制流加密）
+## <span id='cyzc'>二、产业政策大数据平台（带参数的反debug、进制流加密）</span>
 
-http://www.spolicy.com/
+url：http://www.spolicy.com/
 
 
 
-#### 1.1 查看调用堆栈，找到第一个方法
+### 1、查看调用堆栈，找到第一个方法
 
 ![image-20230723101606586](./README.assets/image-20230723101606586.png)
 
@@ -1329,7 +1331,7 @@ http://www.spolicy.com/
 
 
 
-#### 1.2执行脚本跳过debugger
+### 2、执行脚本跳过debugger
 
 ```js
 func_constructor_ = Function.prototype.constructor;
@@ -1347,7 +1349,7 @@ Function.prototype.constructor = function (a) {
 
 
 
-#### 1.3 XHR断点找到接口
+### 3、 XHR断点找到接口
 
 xhr中添加接口的路径：**/info_api/policyType/showPolicyType**
 
@@ -1359,7 +1361,7 @@ xhr中添加接口的路径：**/info_api/policyType/showPolicyType**
 
 
 
-#### 1.4 找生成的方法，生成加密方法
+### 4、找生成的方法，生成加密方法
 
 找到生成o的位置：
 
@@ -1454,7 +1456,7 @@ console.log(get_data("3", 1))
 
 
 
-#### 1.5 携带加密参数发起请求
+### 5、携带加密参数发起请求
 
 ```python
 import execjs
@@ -1493,11 +1495,13 @@ print(response)
 
 
 
-## 三、中国五矿（单文件webpack）
+## <span id='wukuang'>三、中国五矿（单文件webpack）</span>
+
+
 
 url：https://ec.minmetals.com.cn/open/home/purchase-info
 
-#### 1、接口解析
+### 1、接口解析
 
 每次请求都有两个接口，**public**获取公钥，用于后面加密参数；**by-lx-page**是数据接口，参数param是加密后的请求参数
 
@@ -1505,25 +1509,33 @@ url：https://ec.minmetals.com.cn/open/home/purchase-info
 
 
 
-#### 2、解密js
+### 2、解密js
 
-##### 2.1、搜索**/open/homepage/public**（public公钥接口路径）找到js文件位置
+#### 2.1、搜索js文件
+
+搜索**/open/homepage/public**（public公钥接口路径）找到js文件位置
 
 ![image-20230730115747471](./README.assets/image-20230730115747471.png)
 
-##### 2.2、在生成位置找到加载器
+#### 2.2、在生成位置找到加载器
 
 ![image-20230730110315271](./README.assets/image-20230730110315271.png)
 
-##### 2.3、只要加载器部分，下面的函数可以只复制需要的
+#### 2.3、加载器
+
+只要加载器部分，下面的函数可以只复制需要的
 
 ![image-20230730110359241](./README.assets/image-20230730110359241.png)
 
-##### 2.4、补充需要的模块，在这里搜索9816，复制到代码中
+#### 2.4、补充模块
+
+补充需要的模块，在这里搜索9816，复制到代码中
 
 ![image-20230730111507516](./README.assets/image-20230730111507516.png)
 
-##### 2.5、运行时报错，原因是缺少模块，打印出e，看看报错前的模块名，补充模块
+#### 2.5、报错信息
+
+运行时报错，原因是缺少模块，打印出e，看看报错前的模块名，补充模块
 
 ```shel
 /minmetals.js:52
@@ -1533,7 +1545,9 @@ TypeError: Cannot read property 'call' of undefined
 
 ```
 
-##### 2.6、之后补齐所有代码，有两个部分是变化的，**public**公钥和**e**请求参数部分，后续通过python传入
+#### 2.6、补齐代码
+
+之后补齐所有代码，有两个部分是变化的，**public**公钥和**e**请求参数部分，后续通过python传入
 
 ```js
 // ....其他代码省略
@@ -1622,7 +1636,7 @@ print(response)
 
 
 
-## 四、QQ音乐
+## <span id='qqmusic'>四、QQ音乐</span>
 
 url:https://y.qq.com/n/ryqq/search
 
@@ -1642,7 +1656,9 @@ url:https://y.qq.com/n/ryqq/search
 
 
 
-##### 2.2、加密的方法是o()，找到o的生成位置
+##### 2.2、加密方法
+
+加密的方法是o()，找到o的生成位置
 
  **加载器**
 
@@ -1793,7 +1809,9 @@ print(response)
 
 # 案例_2023-8
 
-## 一、企查查
+
+
+## <span id='qichacha'>一、企查查</span>
 
 #### 1、加密参数
 
@@ -1961,11 +1979,11 @@ if __name__ == '__main__':
 
 
 
-## 二、uyanip注册
+## <span id='uyan'>二、uyanip注册</span>
 
 url：https://www.uyanip.com/register
 
-#### 注册流程
+### 一、注册流程
 
 1、接收图片，识别出验证码，拿到Cookies
 
@@ -1975,9 +1993,9 @@ url：https://www.uyanip.com/register
 
 
 
-#### 请求接口
+#### 二、请求接口
 
-##### 1、获取图片和Cookies
+#### 2.1、获取图片和Cookies
 
 ```python
 def get_img():
@@ -2002,7 +2020,7 @@ def get_img():
     }
 ```
 
-##### 2、发送验证码
+#### 2.2、发送验证码
 
 ```python
 
@@ -2035,7 +2053,7 @@ def send_code(phone_number:str, captcha_code, cookies):
 
 
 
-##### 3、发送注册请求
+#### 2.3、发送注册请求
 
 手机验证码发送成功后，就可以请求注册接口了
 
@@ -2084,7 +2102,7 @@ def register(phone_number:str):
 
 
 
-##### 4、注册
+#### 2.4、注册
 
 如果你有短信验证码的接口这里可以进行批量注册。另外代码中没有添加代理，如果需要批量注册可能需要增加代理。
 
@@ -2100,9 +2118,9 @@ if __name__ == '__main__':
 
 
 
-## 三、凤凰云智管理平台（逆向登陆）
+## <span id='fenghuang'>三、凤凰云智管理平台（逆向登陆）</span>
 
-#### 数据接口
+### 1、数据接口
 
 password是加密的
 
@@ -2110,7 +2128,7 @@ password是加密的
 
 
 
-#### 加密的位置
+### 2、加密的位置
 
 使用xhr断点或者堆栈找到加密的位置
 
@@ -2128,7 +2146,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 
 
-#### 还原js
+### 3、还原js
 
 ![image-20230817235447380](./README.assets/image-20230817235447380.png)
 
@@ -2140,7 +2158,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 
 
-##### 1、加载器
+#### 3.1、加载器
 
 点击n的位置跳转到代码，前面部分是加载器，后面是所有的方法。这里只拿加载器，就是最开头的部份，后面跟着的数组是方法。
 
@@ -2150,7 +2168,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 
 
-##### 2、方法
+#### 3.2、方法
 
 下一部是把这个方法里的代码复制到加载器的数组里，
 
@@ -2178,7 +2196,7 @@ loader(0) // 这里就拿到了n(2132)对应的方法
 
 
 
-##### 3、替换掉原来的参数
+#### 3.3、替换掉原来的参数
 
 最终的js代码是这样的。[yuekeyun.js](2023-8/spider_yuekeyun/yuekeyun.js) 
 
@@ -2212,11 +2230,11 @@ function get_password(e) {
 
 
 
-## 四、boss直聘
+## <span id='boss'>四、boss直聘</span>
 
 
 
-### 接口和加密参数
+### 一、接口和加密参数
 
 ```python
 # 接口路径
@@ -2247,11 +2265,11 @@ response = requests.get(url, params=params, cookies=cookies, headers=headers)
 
 
 
-### 逆向js
+### 二、逆向js
 
 [js代码](./2023-8/spider_boss/boss_zptoken.js)
 
-##### 1、找js文件
+#### 1、找js文件
 
 通过关键字搜索 **\__zp_stoken__**，找到生成参数的js。
 
@@ -2262,7 +2280,7 @@ r = (new e).z(t, parseInt(n) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3
 
 
 
-##### 2、断点找加密的方法
+#### 2、断点找加密的方法
 
 通过搜索cookies加密的参数可以找到js文件，断点到加密的位置，把js文件复制下来。
 
@@ -2270,7 +2288,7 @@ r = (new e).z(t, parseInt(n) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3
 
 
 
-##### 3、调用的方法
+#### 3、调用的方法
 
 调试后发现是在**window['ABD']\['prototype']**里，最后我们要调用的方法是：
 
@@ -2287,7 +2305,7 @@ window["ABC"]["prototype"].z(seek, ts)
 
 
 
-##### 4、js执行的问题
+#### 4、js执行的问题
 
 执行js的时候发现很多属性没有，这是很多环境不存在导致的，需要把环境补上。具体可查看代码
 
@@ -2307,7 +2325,7 @@ screen=window.screen;
 
 
 
-##### 5、封装
+#### 5、封装
 
 ```js
 /**
@@ -2325,7 +2343,9 @@ function get_zp_token(sseed, sts) {
 
 # 案例_2023-9
 
-## 一、巨量算数
+
+
+## <span id='juliang'>一、巨量算数</span>
 
 ### 1、接口参数分析
 
@@ -2341,7 +2361,7 @@ function get_zp_token(sseed, sts) {
 
 ### 2、逆向js
 
-##### 2.1 添加XHR断点
+#### 2.1 添加XHR断点
 
 可以添加X-Bogus或者__signature，这里以最后一个参数为例：
 
@@ -2349,7 +2369,7 @@ function get_zp_token(sseed, sts) {
 
 
 
-##### 2.2 添加条件断点
+#### 2.2 添加条件断点
 
 这里需要注意是添加到后面的方法上，不要直接添加在断点的位置（**添加到上图中红框黄色箭头的位置**）。
 
@@ -2365,7 +2385,7 @@ _0x2c5e7b['apply'](_0x275c89, _0x301f8b).length === 28
 
 
 
-##### 2.3 扣js
+#### 2.3 扣js
 
 [巨量.js](2023-9/trendinsight/juliang.js)
 
@@ -2488,7 +2508,7 @@ if __name__ == '__main__':
 
 
 
-## 二、极验滑块
+## <span id='jiyan'>二、极验滑块</span>
 
 url：https://www.geetest.com/demo/slide-float.html
 
@@ -2496,7 +2516,7 @@ url：https://www.geetest.com/demo/slide-float.html
 
 ### 1、分析各请求
 
-##### 1.1 获取gt、challenge参数：
+#### 1.1 获取gt、challenge参数：
 
 https://www.geetest.com/demo/gt/register-slide?t=1694237711524
 
@@ -2512,7 +2532,7 @@ https://www.geetest.com/demo/gt/register-slide?t=1694237711524
 
 
 
-##### 1.2 请求c、s参数
+#### 1.2 请求c、s参数
 
 https://apiv6.geetest.com/get.php...
 
@@ -2539,7 +2559,7 @@ https://apiv6.geetest.com/get.php...
 
 
 
-##### 1.3 取背景图和各种参数
+#### 1.3 取背景图和各种参数
 
 https://api.geetest.com/get.php
 
@@ -2578,7 +2598,7 @@ https://api.geetest.com/get.php
 
 ### 2、生成w值
 
-##### 2.1 验证码参数
+#### 2.1 验证码参数
 
 通过轨迹和其他参数最终会生成w值。
 
@@ -2586,7 +2606,7 @@ https://api.geetest.com/get.php
 
 
 
-##### 2.2 找到对应的js
+#### 2.2 找到对应的js
 
 点击验证码会请求js文件，然后搜索w的unicode编码**"/u0077"**，可以找到代码。
 
@@ -2594,7 +2614,7 @@ https://api.geetest.com/get.php
 
 
 
-##### 2.3 关键参数
+#### 2.3 关键参数
 
 在这个js里会用到前面接口生成的**c、s、gt、challenge**，还需要**轨迹、滑动时间、滑动距离**。代码比较多比较杂，这里直接展示最终的参数生成代码，只需传入对应的参数。
 
@@ -2624,13 +2644,13 @@ function generate_w(params){
 
 ### 3、需要注意的问题
 
-##### 3.1 滑块距离
+#### 3.1 滑块距离
 
 滑块可以使用ddddorc库进行识别，识别出来的**距离需要-10**，因为距离不是从最左侧开始计算的。
 
 
 
-##### 3.2 请求的接口、参数
+#### 3.2 请求的接口、参数
 
 接口请求都需要访问一次，不然可能会报错，尤其是**get.php、ajax.php**等接口。
 
@@ -2638,7 +2658,7 @@ function generate_w(params){
 
 
 
-## 三、加速乐
+## <span id='jiasule'>三、加速乐</span>
 
 url：aHR0cHM6Ly9iZWlhbi5taWl0Lmdvdi5jbi9pbmRleCMvSW50ZWdyYXRlZC9pbmRleA
 
@@ -2718,7 +2738,7 @@ function get_cookie(data) {
 
 
 
-## 四、rpc实现js解密
+## <span id='rpc'>四、rpc实现js解密</span>
 
 ### 1、介绍
 
@@ -2730,7 +2750,7 @@ rpc实现js解密的思路即在浏览器和本地之间实现websocket通信，
 
 ### 2、实现步骤
 
-##### 2.1 定义方法
+#### 2.1 定义方法
 
 **示例网站（Base64）：**aHR0cDovL3d3dy5mYW5nZGkuY29tLmNuL3NlcnZpY2UvYnVsbGV0aW5fbGlzdC5odG1sP3R5cGVhPTNiODgwMzdiYjhiM2Y5MDgmbmFtZT0lRTglQTElOEMlRTQlQjglOUElRTUlOEElQTglRTYlODAlODE=
 
@@ -2746,7 +2766,7 @@ windows.my_crypto = _$vQ; // _$vQ为加密的方法，需要一个参数
 
 
 
-##### 2.2 浏览器嵌入服务端代码
+#### 2.2 浏览器嵌入服务端代码
 
 在终端中执行或者使用代码段等方式嵌入代码。
 
@@ -2772,7 +2792,7 @@ windows.my_crypto = _$vQ; // _$vQ为加密的方法，需要一个参数
 
 
 
-##### 2.3 python客户端调用
+#### 2.3 python调用
 
 ```python
 import sys
@@ -2806,7 +2826,7 @@ asyncio.get_event_loop().run_forever()
 
 
 
-##### 2.4 结果
+#### 2.4 结果
 
 输入参数，浏览器调用方法执行函数，返回结果
 
@@ -2818,7 +2838,9 @@ result： http://www.xxxxxxx.com.cn/xxxxxx/hello?MmEwMD=4PCeybQd55uKYvUSSmDMRog5
 
 
 
-## 五、同花顺（hook cookie、补环境）
+## <span id='tonghuashun'>五、同花顺（hook cookie、补环境）</span>
+
+
 
 url：aHR0cDovL3EuMTBqcWthLmNvbS5jbi8=
 
@@ -2830,7 +2852,7 @@ hook cookie的方式有很多，油猴、代码注入等，这一次使用的工
 
 
 
-##### 1.1 hook 代码
+#### 1.1 hook 代码
 
 ```js
 (function() {
@@ -2859,7 +2881,7 @@ hook cookie的方式有很多，油猴、代码注入等，这一次使用的工
 
 
 
-##### 1.2 跟栈
+#### 1.2 跟栈
 
 看到这个值是**v**的时候就是我们的目标cookie了，往上跟栈找到它的代码，就在如下的位置。
 
@@ -2950,7 +2972,9 @@ function get_v(){
 
 
 
-## 六、微信小程序
+## <span id='wechat'>六、微信小程序（百达星系）</span>
+
+
 
 微信：3.8.1版本
 
@@ -2958,7 +2982,7 @@ function get_v(){
 
 ### 1、准备工作
 
-##### 1.1 包路径
+#### 1.1 包路径
 
 ```shell
 cd ～/Library/Containers/com.tencent.xinWeChat/Data/.wxapplet/packages/
@@ -2970,29 +2994,29 @@ cd ～/Library/Containers/com.tencent.xinWeChat/Data/.wxapplet/packages/
 
 
 
-##### 1.2 关闭sip
+#### 1.2 关闭sip
 
 参考：https://sspai.com/post/55066#
 
 
 
-##### 1.3 反编译
+#### 1.3 反编译
 
 工具：unveilr.exe https://www.aliyundrive.com/s/Ckkm4xeJwSB 提取码: 48fs
 
 
 
-## 2、反编译
+### 2、反编译
 
 
 
-##### 2.1 工具介绍
+#### 2.1 工具介绍
 
 反编译工具有wxappUnpacker等，但是项目比较老，运行会报错。所以用到了unveilr.exe这个工具，只找到了windows上运行的版本，可以使用虚拟机或者windows系统进行反编译。
 
 
 
-##### 2.2 编译
+#### 2.2 编译
 
 将packages/***.wxapkg文件都放到一个文件夹中，执行：
 
@@ -3002,23 +3026,23 @@ unveilr.exe /testpkg # /testpkg替换为你存放文件的路径
 
 
 
-##### 2.3 编译
+#### 2.3 编译
 
 完成后会生成一个文件夹**\_\_APP\_\_**
 
 
 
-## 3、调试js
+### 3、调试js
 
 
 
-##### 3.1 导入到微信开发者工具
+#### 3.1 导入到微信开发者工具
 
 打开微信开发者工具，选择导入项目，将APP文件夹导入。
 
 
 
-##### 3.2 编译项目
+#### 3.2 编译项目
 
 取消勾选**"将JS编译成ES5"**，勾选**"不校验合法域名..."**，点击编译
 
@@ -3026,6 +3050,123 @@ unveilr.exe /testpkg # /testpkg替换为你存放文件的路径
 
 
 
-##### 3.3 逆向
+### 4、逆向
 
-之后就可以开始逆向，操作和浏览器开发者工具类似。
+以list接口为例。
+
+
+
+#### 4.1 加密参数
+
+加密参数在headers中：
+
+**MessageId**
+
+**Signature**
+
+
+
+#### 4.2 扣js
+
+全局搜索MessageId和Signature参数，加密方法都在**common.js**文件中，逆向过程没有什么难点，只提几个注意事项：
+
+- **c()**方法为MD5加密，可以导入库进行加密，不用扣代码；
+- **Signature**需要**MessageId**作为参数，所以先扣MessageId，当然先随便写个参数也无所谓。
+- **t.url**为请求接口的url，可以封装成方法直接传入。
+
+
+
+```js
+// 导入md5
+const CryptoJS = require('crypto-js')
+
+// url = "https://api.betterwood.com/hotel/brand/museum/list"
+
+/**
+ * 传入接口的完整url，返回headers中的参数
+ * @param url 接口的完整url
+ * @returns {{Signature: *, MessageId}}
+ */
+function get_headers(url) {
+    // MessageId
+    H = function (t) {
+        for (var n = [8, 13, 18, 23], e = 0; e < n.length; e++)
+            t = t.slice(0, n[e]) + "-" + t.slice(n[e]);
+        return t
+    }
+    x = function () {
+        for (var t = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : "", n = [], e = "0123456789abcdef", r = 0; r < 36; r++) {
+            var o = Math.floor(16 * Math.random());
+            n[r] = e.substring(o, o + 1)
+        }
+        n[14] = "4";
+        var i = 3 & Number(n[19]) | 8;
+        n[19] = e.substring(i, i + 1),
+            n[8] = n[13] = n[18] = n[23] = "-";
+        var u = n.join("")
+            , a = H(CryptoJS.MD5(u + (new Date).getTime() + t).toString());
+        return a
+    }
+    MessageId = x()
+
+
+    // Signature
+    L = function (t, n, e, r, o, i, u, a, s) {
+        var d = "";
+        return d = a ? "AppVersion=".concat(o, "Authorization=").concat(a, "Channel=").concat(i, "ClientType=").concat(r, "DeviceManufacture=").concat(n, "DeviceModel=").concat(e, "MessageId=").concat(u, "OsVersion=").concat(t, "AppKey=C49E2654AAA94F5085A9C12FE2CAB09CUrl=").concat(s) : "AppVersion=".concat(o, "Channel=").concat(i, "ClientType=").concat(r, "DeviceManufacture=").concat(n, "DeviceModel=").concat(e, "MessageId=").concat(u, "OsVersion=").concat(t, "AppKey=C49E2654AAA94F5085A9C12FE2CAB09CUrl=").concat(s),
+            d = CryptoJS.MD5(d.replace(/\s*/g, "")).toString().substring(4, 28).toLocaleUpperCase()
+    }
+    var o = {
+        "content-type": "application/json",
+        "Channel": "bdw",
+        "AppVersion": "2.3.6",
+        "BusinessType": 1,
+        "MessageId": MessageId,
+        "ClientType": "5",
+        "OsVersion": "iOS 10.0.1",
+        "DeviceManufacture": "devtools",
+        "DeviceModel": "iPhone 5"
+    }
+        , i = o.OsVersion
+        , u = o.DeviceManufacture
+        , c = o.DeviceModel
+        , a = o.ClientType
+        , d = o.AppVersion
+        , l = o.Channel
+        , p = o.MessageId
+        , h = o.Authorization
+        , g = encodeURIComponent(url.split("betterwood.com")[1].split("?")[0])
+        , Signature = L(i, u, c, a, d, l, p, h, g);
+
+    return {
+        'Signature': Signature,
+        'MessageId': MessageId,
+    }
+}
+```
+
+
+
+#### 4.3 构建请求
+
+```python
+import execjs
+import requests
+
+# 需要两个参数
+# MessageId = ''
+# Signature = ''
+url = 'https://api.betterwood.com/hotel/brand/museum/list'
+
+# 执行js
+with open('./betterwood.js', 'r') as f:
+    read = f.read()
+v = execjs.compile(read).call('get_headers', url)
+MessageId = v['MessageId']
+Signature = v['Signature']
+```
+
+
+
+
+
