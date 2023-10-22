@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
+目前已完成：**[网易易盾](#yidun)、[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
 
 点击以上链接可跳转到对应文档位置，代码路径格式为**"月份/网站名称/"**。
 
@@ -2970,9 +2970,11 @@ function get_v(){
 
 
 
+# 案例_2023-10
 
 
-## <span id='wechat'>六、微信小程序（百达星系）</span>
+
+## <span id='wechat'>一、微信小程序（百达星系）</span>
 
 
 
@@ -3170,3 +3172,209 @@ Signature = v['Signature']
 
 
 
+## 二、<span id='yidun'>网易易盾滑块验证码</span>
+
+网站：aHR0cDovL2FwcC5taWl0LWVpZGMub3JnLmNuL21paXR4eGdrL2dvbmdnYW8veHhnay9xdWVyeUNwUGFyYW1QYWdlP2RhdGFUYWc9WiZnaWQ9VzAxNDczMDgmcGM9MzIw
+
+
+
+### 1、工具准备
+
+#### 1.1 js替换
+
+使用**reres**插件进行替换，因为链接是变化的，浏览器不支持正则匹配。
+
+```json
+[
+	{
+		"req": "http:\\/\\/cstaticdun\\.126\\.net\\/([\\d.]+)\\/core\\.v([\\d.]+)\\.min\\.js\\?v=\\d+",
+		"res": "file:///.../core.js", 
+		"checked": true
+	}
+]
+```
+
+res替换为你实际的代码。
+
+
+
+#### 1.2 解ob混淆工具
+
+js为ob混淆，需要解码，不然后面调试很麻烦。
+
+
+
+#### 1.3 滑块识别
+
+```shell
+pip install ddddocr
+```
+
+> https://github.com/sml2h3/ddddocr
+
+
+
+
+
+### 2、各接口解释
+
+接口比较多，加密的参数也比较多。有些接口不需要访问也可以，例如d、b接口。只请求以下接口即可获取结果。
+
+
+
+#### 2.1 getconf 获取配置信息接口
+
+接口： /api/v2/getconf
+
+这个接口获取的是**dt**参数和**acToken**，可以**直接访问**。
+
+```json
+{
+  "data": {
+    "dt": "QZCRDl9Lpl1BBgQRQAKByyc31aO1bp/J",
+    "ac": {
+        // ...
+        "token": "9ca17ae2e6fecda16ae2e6eeb5cb528ab69db8ea65bcaeaf9ad05b9c94a3a3c434898987d2b25ef4b2a983bb2af0feacc3b92ae2f4ee95a132e29aa3b1cd72abae8cd1d44eb0b7bb82f55bb08fa3afd437fffeb3"
+    }
+}
+```
+
+
+
+####  
+
+#### 2.2 get 获取图片接口
+
+接口 /api/v3/get
+
+接口后缀为get。在开始逆向之前，需要先将core*.js文件保存到本地，然后进行替换，由于链接参数会变，而且文件也会变，请使用正则替换（见1.1）。
+
+
+
+##### 2.2.1 cb参数
+
+在启动器找到**core*.js**文件，可以看到是webpack打包的，需要将加载器拿出来，再将生成参数所需的方法放到加载器中，之后的参数也是同理。
+
+cb参数在core*.js文件中搜索即可。
+
+```js
+// webpack加载器
+var loader;
+!(function (_0x3b7444) {
+        function _0x1cb9e6(_0x3fc657) {
+            if (_0x3669a8[_0x3fc657]) return _0x3669a8[_0x3fc657]["exports"];
+            var _0xe69548 = _0x3669a8[_0x3fc657] = {
+                "exports": {},
+                "id": _0x3fc657,
+                "loaded": !1
+            };
+            return _0x3b7444[_0x3fc657]["call"](_0xe69548["exports"], _0xe69548, _0xe69548["exports"], _0x1cb9e6), _0xe69548["loaded"] = !0, _0xe69548["exports"];
+        }
+
+        var _0x3669a8 = {};
+        loader = _0x1cb9e6;
+    }([
+  // 方法放在这里
+          ])
+```
+
+
+
+
+
+##### 2.2.2 fp参数
+
+fp参数也可以进行搜索找到，里面是xxx['fingerprint']，再往上是**windows['gdxidpyhxde']**，hook一下这个变量：
+
+```js
+(function() {
+    // 严谨模式 检查所有错误
+    'use strict';
+    // document 为要hook的对象 这里是hook的cookie
+	var cookieTemp = "";
+    Object.defineProperty(window, 'gdxidpyhxde', {
+		// hook set方法也就是赋值的方法
+		set: function(val) {
+				// 这样就可以快速给下面这个代码行下断点
+				// 从而快速定位设置cookie的代码
+				console.log('Hook捕获到cookie设置->', val);
+                debugger;
+				cookieTemp = val;
+				return val;
+		},
+		// hook get 方法也就是取值的方法
+		get: function()
+		{
+			return cookieTemp;
+		}
+    });
+})();
+```
+
+
+
+##### 2.2.3 id、dt、acToken
+
+id是固定的值，每个网站都有一个固定的id
+
+dt、acToken来自第一个接口，后面如果有同样的名称均来自这个接口，不再赘述。
+
+
+
+##### 2.2.4 返回值
+
+```json
+{
+  "bg": [
+    // 图片，取下来计算距离
+    "http://necaptcha.nosdn.127.net/db070c3069f345c1af447b88e861e10b@2x.jpg",
+    "http://necaptcha1.nosdn.127.net/db070c3069f345c1af447b88e861e10b@2x.jpg"
+  ],
+  "front": [
+    "http://necaptcha.nosdn.127.net/ab94da01524449dfb38b2f2910b8fddb@2x.png",
+    "http://necaptcha1.nosdn.127.net/ab94da01524449dfb38b2f2910b8fddb@2x.png"
+  ],
+  // 这个token会用到校验的接口中
+  "token": "fa1a9c71663e4f1a8acf9ae5b60a085b",
+  "type": 2,
+  "zoneId": "CN31"
+}
+```
+
+
+
+
+
+#### 2.3、check 轨迹校验接口
+
+数据校验接口，成功会返回validate值。
+
+
+
+##### 2.3.1 data参数
+
+这个接口主要的参数是data，里面包含了轨迹。
+
+跟栈check接口就可以找到生成位置，直接扣下来即可。
+
+> 其中，atomTraceData是原始轨迹，tranceData是加密后的轨迹。这些参数最好都打断点看一下，确实生成的是否和网站一致。
+
+![image-20231022161547651](./README.assets/image-20231022161547651.png)
+
+
+
+##### 2.3.2 token值
+
+来自图片接口返回的token。
+
+
+
+### 3、总结
+
+如果返回的接口一直是false，大概率是轨迹的问题。
+
+易盾的验证个人感觉还是比较繁琐的，接口、加密参数都比较多，建议看看b站视频和论坛的文档参考。
+
+> https://blog.csdn.net/weixin_56199707/article/details/129083704?spm=1001.2014.3001.5502
+>
+> https://www.bilibili.com/video/BV15p4y157kv/?spm_id_from=333.337.search-card.all.click&vd_source=a00430ee8bb4e7511d6b31f67038005d
