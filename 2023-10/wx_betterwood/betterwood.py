@@ -7,7 +7,7 @@ import requests
 url = 'https://api.betterwood.com/hotel/brand/museum/list'
 
 # 执行js
-with open('./betterwood.js', 'r') as f:
+with open('betterwood.js', 'r') as f:
     read = f.read()
 v = execjs.compile(read).call('get_headers', url)
 MessageId = v['MessageId']
