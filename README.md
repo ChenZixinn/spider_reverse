@@ -24,7 +24,7 @@ pip install -r requirements.txt
 
 接口为 “http://www.whggzy.com/front/search/category”
 
-![image-20230602094847529](./README.assets/image-20230602094847529.png)
+![image-20230602094847529](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602094847529.png)
 
 
 
@@ -55,7 +55,7 @@ data = {
 
 在源代码->xhr/提取断点中加入断点，观察到headers的参数，且data参数为字符串
 
-![image-20230602095429289](./README.assets/image-20230602095429289.png)
+![image-20230602095429289](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602095429289.png)
 
 
 
@@ -104,7 +104,7 @@ url: https://www.qimingpian.com/finosda/project/pinvestment
 
 找到接口：
 
-![image-20230602114517059](./README.assets/image-20230602114517059.png)
+![image-20230602114517059](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602114517059.png)
 
 
 
@@ -112,13 +112,13 @@ url: https://www.qimingpian.com/finosda/project/pinvestment
 
 找到js文件
 
-![image-20230602114651972](./README.assets/image-20230602114651972.png)
+![image-20230602114651972](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602114651972.png)
 
 
 
 找到加密数据的方法：
 
-![image-20230602104759972](./README.assets/image-20230602104759972.png)
+![image-20230602104759972](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602104759972.png)
 
 
 
@@ -181,7 +181,7 @@ url： https://jzsc.mohurd.gov.cn/data/company
 
 通过接口名称找到js文件，在js文件里搜索JSON.parse，打断点进行调试
 
-![image-20230602142415295](./README.assets/image-20230602142415295.png)
+![image-20230602142415295](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602142415295.png)
 
 
 
@@ -236,9 +236,7 @@ AFB3D177A5D1D916CFEFBE70FEFC0C59C0463AE137DE1A099C4B169B8AB9DBC33EE55B1...（加
 
 #### 4.2 搜索加密接口
 
-![image-20230602153850946](./README.assets/image-20230602153850946.png)
-
-
+![](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602153850946.png)
 
 
 
@@ -246,7 +244,7 @@ AFB3D177A5D1D916CFEFBE70FEFC0C59C0463AE137DE1A099C4B169B8AB9DBC33EE55B1...（加
 
 通过断点找到加密的方法，方法经过了js混淆，直接复制方法，执行这个方法，根据提示补齐所有缺失的属性。
 
-![image-20230602154006084](./README.assets/image-20230602154006084.png)
+![image-20230602154006084](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602154006084.png)
 
 
 
@@ -301,7 +299,9 @@ url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019cate
 
 有加密参数，找这个参数的js文件
 
-![image-20230602100140806](./README.assets/image-20230602100140806.png)
+![](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602100140806.png)
+
+![](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231022161547651.png)
 
 #### 5.2 搜索加密参数
 
@@ -309,7 +309,7 @@ url: https://sale.1688.com/factory/category.html?spm=a260k.22464671.home2019cate
 
 再经过h函数
 
-![image-20230602100323351](./README.assets/image-20230602100323351.png)
+![image-20230602100323351](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602100323351.png)
 
 
 
@@ -370,7 +370,7 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 为base64加密
 
-![image-20230602102009457](./README.assets/image-20230602102009457.png)
+![image-20230602102009457](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602102009457.png)
 
 
 
@@ -378,7 +378,7 @@ url: https://webapi.cninfo.com.cn/#/marketDataDate
 
 通过标头名或者路径搜索，找到js文件；该方法使用了js混淆。
 
-![image-20230602102531128](./README.assets/image-20230602102531128.png)
+![image-20230602102531128](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230602102531128.png)
 
 
 
@@ -392,7 +392,7 @@ url: https://www.qimai.cn/rank
 
 通过英文搜索到接口（中文有编码）
 
-![image-20230604223717940](./README.assets/image-20230604223717940.png)
+![image-20230604223717940](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230604223717940.png)
 
 #### 7.2 搜索js文件
 
@@ -410,7 +410,7 @@ url: https://www.qimai.cn/rank
 
 ##### 单步调试找到加密位置
 
-![image-20230604225151994](./README.assets/image-20230604225151994.png)
+![image-20230604225151994](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230604225151994.png)
 
 
 
@@ -507,7 +507,7 @@ console.log(url(pass));
 
 #### 8.1 查看接口
 
-![image-20230605145711223](./README.assets/image-20230605145711223.png)
+![image-20230605145711223](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605145711223.png)
 
 
 
@@ -521,7 +521,7 @@ console.log(url(pass));
 
 找到方法，再进行搜索
 
-![image-20230605150642725](./README.assets/image-20230605150642725.png)
+![image-20230605150642725](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605150642725.png)
 
 
 
@@ -650,11 +650,11 @@ url:https://m.flight.qunar.com/h5/flight/
 
 8.1.1、请求参数：**\_\_m\_\_**
 
-![image-20230605172141802](./README.assets/image-20230605172141802.png)
+![image-20230605172141802](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605172141802.png)
 
 8.1.2、请求头参数：**键值对加密**
 
-![image-20230605172331402](./README.assets/image-20230605172331402.png)
+![image-20230605172331402](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605172331402.png)
 
 #### 8.2、请求参数
 
@@ -662,13 +662,13 @@ url:https://m.flight.qunar.com/h5/flight/
 
 f()为**md5**加密
 
-![image-20230605223339438](./README.assets/image-20230605223339438.png)
+![image-20230605223339438](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605223339438.png)
 
 
 
 u()为**SHA1**加密
 
-![image-20230605223535368](./README.assets/image-20230605223535368.png)
+![image-20230605223535368](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230605223535368.png)
 
 ##### 8.2.2 js代码解析
 
@@ -879,7 +879,7 @@ url: https://gz.meituan.com/meishi/
 
 _token为加密参数。
 
-![image-20230609204919138](./README.assets/image-20230609204919138.png)
+![image-20230609204919138](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230609204919138.png)
 
 
 
@@ -887,7 +887,7 @@ _token为加密参数。
 
 查找到token的生成位置，找到加密的方法
 
-![image-20230609210113287](./README.assets/image-20230609210113287.png)
+![image-20230609210113287](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230609210113287.png)
 
 
 
@@ -991,7 +991,7 @@ iP = {
 
 ### 十一、天安财险
 
-![image-20230705221116122](./README.assets/image-20230705221116122.png)
+![image-20230705221116122](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230705221116122.png)
 
 - 完成登陆请求中的json_key参数加密方法
 - 解析返回的接口
@@ -1020,7 +1020,7 @@ Function.prototype.constructor = function (a) {
 };
 ```
 
-![image-20230723113329633](./README.assets/image-20230723113329633.png)
+![image-20230723113329633](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723113329633.png)
 
 
 
@@ -1076,11 +1076,11 @@ response = requests.post(
 
 - 搜索”encrypt“
 
-![image-20230723115442814](./README.assets/image-20230723115442814.png)
+![image-20230723115442814](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723115442814.png)
 
 - 搜索接口
 
-![image-20230723120236468](./README.assets/image-20230723120236468.png)
+![image-20230723120236468](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723120236468.png)
 
 > 交集在**186ef37.js**
 
@@ -1088,7 +1088,7 @@ response = requests.post(
 
 ##### 12.3.3 断点调试
 
-![image-20230723120510583](./README.assets/image-20230723120510583.png)
+![image-20230723120510583](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723120510583.png)
 
 ```js
 // 第一个参数是密文，第二个参数是加密的key
@@ -1110,7 +1110,7 @@ _0xecb012 = function(_0x23e639, _0x5b5a7f) {
 
 通过观察发现key不是固定的，存储在一个字典中。通过接口返回的值hasUse选择对应的key。
 
-![image-20230723121116914](./README.assets/image-20230723121116914.png)
+![image-20230723121116914](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723121116914.png)
 
 #### 12.4  构造解密函数
 
@@ -1135,7 +1135,7 @@ def AES_decrypt(data, hasUse:int):
 
 [完整代码](./other/demo3_qizhidao/crawler_qizhidao.py)
 
-![image-20230723123350450](./README.assets/image-20230723123350450.png)
+![image-20230723123350450](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723123350450.png)
 
 
 
@@ -1147,11 +1147,11 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 ##### 13.1.1 跳过debug
 
-![image-20230622123802952](./README.assets/image-20230622123802952.png)
+![image-20230622123802952](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230622123802952.png)
 
 ##### 13.1.2 弹出开发者工具
 
-![image-20230622124037862](./README.assets/image-20230622124037862.png)
+![image-20230622124037862](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230622124037862.png)
 
 #### 13.2 请求参数解析
 
@@ -1159,7 +1159,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
  [aqi.js](2023-6_before/aqi.js) 
 
-![image-20230705220910980](./README.assets/image-20230705220910980.png)
+![image-20230705220910980](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230705220910980.png)
 
 
 
@@ -1185,7 +1185,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 进入debug，可以看到调用的位置，打断点调试，**进入堆栈中的方法**。
 
-![image-20230725000802567](./README.assets/image-20230725000802567.png)
+![image-20230725000802567](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230725000802567.png)
 
 
 
@@ -1193,7 +1193,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 参数是**arg2**，查找这个参数。
 
-![image-20230725000921359](./README.assets/image-20230725000921359.png)
+![image-20230725000921359](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230725000921359.png)
 
 
 
@@ -1308,7 +1308,7 @@ url：http://www.spolicy.com/
 
 ### 1、查看调用堆栈，找到第一个方法
 
-![image-20230723101606586](./README.assets/image-20230723101606586.png)
+![image-20230723101606586](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230723101606586.png)
 
 ```js
 // 调用的方法
@@ -1343,7 +1343,7 @@ Function.prototype.constructor = function (a) {
 };
 ```
 
-![image-20230725233312016](./README.assets/image-20230725233312016.png)
+![image-20230725233312016](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230725233312016.png)
 
 
 
@@ -1357,7 +1357,7 @@ xhr中添加接口的路径：**/info_api/policyType/showPolicyType**
 
 找到**interceptors.response.use**的位置，返回的结果中存在了加密数据**data**。
 
-![image-20230726000638651](./README.assets/image-20230726000638651.png)
+![image-20230726000638651](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230726000638651.png)
 
 
 
@@ -1365,13 +1365,13 @@ xhr中添加接口的路径：**/info_api/policyType/showPolicyType**
 
 找到生成o的位置：
 
-![image-20230727000547059](./README.assets/image-20230727000547059.png)
+![image-20230727000547059](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230727000547059.png)
 
 
 
 找到生成的方法：
 
-![image-20230727000609949](./README.assets/image-20230727000609949.png)
+![image-20230727000609949](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230727000609949.png)
 
 
 
@@ -1505,7 +1505,7 @@ url：https://ec.minmetals.com.cn/open/home/purchase-info
 
 每次请求都有两个接口，**public**获取公钥，用于后面加密参数；**by-lx-page**是数据接口，参数param是加密后的请求参数
 
-![image-20230730115501441](./README.assets/image-20230730115501441.png)
+![image-20230730115501441](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730115501441.png)
 
 
 
@@ -1515,23 +1515,23 @@ url：https://ec.minmetals.com.cn/open/home/purchase-info
 
 搜索**/open/homepage/public**（public公钥接口路径）找到js文件位置
 
-![image-20230730115747471](./README.assets/image-20230730115747471.png)
+![image-20230730115747471](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730115747471.png)
 
 #### 2.2、在生成位置找到加载器
 
-![image-20230730110315271](./README.assets/image-20230730110315271.png)
+![image-20230730110315271](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730110315271.png)
 
 #### 2.3、加载器
 
 只要加载器部分，下面的函数可以只复制需要的
 
-![image-20230730110359241](./README.assets/image-20230730110359241.png)
+![image-20230730110359241](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730110359241.png)
 
 #### 2.4、补充模块
 
 补充需要的模块，在这里搜索9816，复制到代码中
 
-![image-20230730111507516](./README.assets/image-20230730111507516.png)
+![image-20230730111507516](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730111507516.png)
 
 #### 2.5、报错信息
 
@@ -1642,7 +1642,7 @@ url:https://y.qq.com/n/ryqq/search
 
 #### 1、接口解析
 
-![image-20230730123000503](./README.assets/image-20230730123000503.png)
+![image-20230730123000503](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730123000503.png)
 
 接口中**sign**参数为加密参数
 
@@ -1652,7 +1652,7 @@ url:https://y.qq.com/n/ryqq/search
 
 ##### 2.1、搜索sign找到js文件
 
-![image-20230730122850019](./README.assets/image-20230730122850019.png)
+![image-20230730122850019](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730122850019.png)
 
 
 
@@ -1664,7 +1664,7 @@ url:https://y.qq.com/n/ryqq/search
 
 n为加载器，把n的代码复制（webpack）
 
-![image-20230730124305966](./README.assets/image-20230730124305966.png)
+![image-20230730124305966](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730124305966.png)
 
 
 
@@ -1683,7 +1683,7 @@ var loader_;
 
 这里是具体方法，把整个代码复制，在原来的代码中导入
 
-![image-20230730124318895](./README.assets/image-20230730124318895.png)
+![image-20230730124318895](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730124318895.png)
 
 ```js
 // 加载这个方法的所有代码
@@ -1720,7 +1720,7 @@ result = loader_(350).default(t_data)
 
 加密方法是一样的，但是结果不一样，考虑是环境的问题，补充一些环境再测试
 
-![image-20230730124957945](./README.assets/image-20230730124957945.png)
+![image-20230730124957945](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230730124957945.png)
 
 ```js
 navigator = {
@@ -1819,7 +1819,7 @@ print(response)
 
 还有一个参数是**X-Pid**，可以在页面返回的数据中找到。
 
-![image-20230811204543466](./README.assets/image-20230811204543466.png)
+![image-20230811204543466](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230811204543466.png)
 
 
 
@@ -1827,7 +1827,7 @@ print(response)
 
 由于这个参数设置了headers的key和value，所以在代码里搜 **"headers["** 或者 **"headers."** 找到加密的位置。
 
-![image-20230808211628612](./README.assets/image-20230808211628612.png)
+![image-20230808211628612](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230808211628612.png)
 
 加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023-8/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
 
@@ -1847,7 +1847,7 @@ function run(path, tid, json_data){}
 
 **tid**：tid在请求的页面中，可以使用正则表达式提取出来。
 
-![image-20230809135628734](./README.assets/image-20230809135628734.png)
+![image-20230809135628734](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230809135628734.png)
 
 
 
@@ -2124,7 +2124,7 @@ if __name__ == '__main__':
 
 password是加密的
 
-![image-20230817232654341](./README.assets/image-20230817232654341.png)
+![image-20230817232654341](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230817232654341.png)
 
 
 
@@ -2132,7 +2132,7 @@ password是加密的
 
 使用xhr断点或者堆栈找到加密的位置
 
-![image-20230817232619155](./README.assets/image-20230817232619155.png)
+![image-20230817232619155](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230817232619155.png)
 
 ```js
 // 加密的js代码
@@ -2148,7 +2148,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 ### 3、还原js
 
-![image-20230817235447380](./README.assets/image-20230817235447380.png)
+![image-20230817235447380](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230817235447380.png)
 
 
 
@@ -2162,7 +2162,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 点击n的位置跳转到代码，前面部分是加载器，后面是所有的方法。这里只拿加载器，就是最开头的部份，后面跟着的数组是方法。
 
-![image-20230817235525704](./README.assets/image-20230817235525704.png)
+![image-20230817235525704](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230817235525704.png)
 
 
 
@@ -2172,7 +2172,7 @@ i.default.encryptedString(c, encodeURIComponent(e))
 
 下一部是把这个方法里的代码复制到加载器的数组里，
 
-![image-20230817235705203](./README.assets/image-20230817235705203.png)
+![image-20230817235705203](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230817235705203.png)
 
 
 
@@ -2284,7 +2284,7 @@ r = (new e).z(t, parseInt(n) + 60 * (480 + (new Date).getTimezoneOffset()) * 1e3
 
 通过搜索cookies加密的参数可以找到js文件，断点到加密的位置，把js文件复制下来。
 
-![image-20230827145729574](./README.assets/image-20230827145729574.png)
+![image-20230827145729574](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230827145729574.png)
 
 
 
@@ -2299,9 +2299,9 @@ window["ABC"]["prototype"].z(seek, ts)
 
 
 
-![image-20230827150020204](./README.assets/image-20230827150020204.png)
+![image-20230827150020204](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230827150020204.png)
 
-![image-20230827150036055](./README.assets/image-20230827150036055.png)
+![image-20230827150036055](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230827150036055.png)
 
 
 
@@ -2349,7 +2349,7 @@ function get_zp_token(sseed, sts) {
 
 ### 1、接口参数分析
 
-![image-20230901171313113](./README.assets/image-20230901171313113.png)
+![image-20230901171313113](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230901171313113.png)
 
 
 
@@ -2365,7 +2365,7 @@ function get_zp_token(sseed, sts) {
 
 可以添加X-Bogus或者__signature，这里以最后一个参数为例：
 
-##### ![image-20230901171837094](./README.assets/image-20230901171837094.png)
+##### ![image-20230901171837094](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230901171837094.png)
 
 
 
@@ -2602,7 +2602,7 @@ https://api.geetest.com/get.php
 
 通过轨迹和其他参数最终会生成w值。
 
-![image-20230911225637080](./README.assets/image-20230911225637080.png)
+![image-20230911225637080](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230911225637080.png)
 
 
 
@@ -2610,7 +2610,7 @@ https://api.geetest.com/get.php
 
 点击验证码会请求js文件，然后搜索w的unicode编码**"/u0077"**，可以找到代码。
 
-![image-20230911230056561](./README.assets/image-20230911230056561.png)
+![image-20230911230056561](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230911230056561.png)
 
 
 
@@ -2762,7 +2762,7 @@ rpc实现js解密的思路即在浏览器和本地之间实现websocket通信，
 windows.my_crypto = _$vQ; // _$vQ为加密的方法，需要一个参数
 ```
 
-![image-20230928133628611](./README.assets/image-20230928133628611.png)
+![image-20230928133628611](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230928133628611.png)
 
 
 
@@ -2846,7 +2846,7 @@ url：aHR0cDovL3EuMTBqcWthLmNvbS5jbi8=
 
 ### 1、hook cookie
 
-hook cookie的方式有很多，油猴、代码注入等，这一次使用的工具是[v_jstools](https://github.com/cilame/v_jstools)，后面补环境的时候也是用它。
+hook cookie的方式有很多，油猴、代码注入等，这一次使用的工具是[v_jstools](https://raw.githubusercontent.com/cilame/v_jstools)，后面补环境的时候也是用它。
 
 当然你也可以使用其他的方式，hook的js代码：
 
@@ -2885,7 +2885,7 @@ hook cookie的方式有很多，油猴、代码注入等，这一次使用的工
 
 看到这个值是**v**的时候就是我们的目标cookie了，往上跟栈找到它的代码，就在如下的位置。
 
-![image-20230929142319248](./README.assets/image-20230929142319248.png)
+![image-20230929142319248](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230929142319248.png)
 
 
 
@@ -2944,7 +2944,7 @@ function get_v(){
 
 ##### 2.1.1 功能开关按如下配置打开：
 
-![image-20230929143021930](./README.assets/image-20230929143021930.png)
+![image-20230929143021930](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230929143021930.png)
 
 
 
@@ -2952,7 +2952,7 @@ function get_v(){
 
 点击工具，点击打开配置页面，然后勾选如下配置：
 
-![image-20230929143227611](./README.assets/image-20230929143227611.png)
+![image-20230929143227611](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230929143227611.png)
 
 
 
@@ -3048,7 +3048,7 @@ unveilr.exe /testpkg # /testpkg替换为你存放文件的路径
 
 取消勾选**"将JS编译成ES5"**，勾选**"不校验合法域名..."**，点击编译
 
-![image-20230930130104720](./README.assets/image-20230930130104720.png)
+![image-20230930130104720](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230930130104720.png)
 
 
 
@@ -3210,7 +3210,7 @@ js为ob混淆，需要解码，不然后面调试很麻烦。
 pip install ddddocr
 ```
 
-> https://github.com/sml2h3/ddddocr
+> https://raw.githubusercontent.com/sml2h3/ddddocr
 
 
 
@@ -3359,7 +3359,7 @@ dt、acToken来自第一个接口，后面如果有同样的名称均来自这�
 
 > 其中，atomTraceData是原始轨迹，tranceData是加密后的轨迹。这些参数最好都打断点看一下，确实生成的是否和网站一致。
 
-![image-20231022161547651](./README.assets/image-20231022161547651.png)
+![image-20231022161547651](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231022161547651.png)
 
 
 
@@ -3378,3 +3378,4 @@ dt、acToken来自第一个接口，后面如果有同样的名称均来自这�
 > https://blog.csdn.net/weixin_56199707/article/details/129083704?spm=1001.2014.3001.5502
 >
 > https://www.bilibili.com/video/BV15p4y157kv/?spm_id_from=333.337.search-card.all.click&vd_source=a00430ee8bb4e7511d6b31f67038005d
+

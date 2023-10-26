@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "@babel/parser": "^7.23.0",
+    "@babel/traverse": "^7.23.2",
+    "babel": "^6.23.0",
     "canvas": "^2.11.2",
     "crypto-js": "^4.1.1",
     "jsdom": "^22.1.0"
