@@ -45,6 +45,7 @@ class ZkhCrawler:
         }
         self.proxies = PROXIES
         self.proxies = None
+        self.session = requests.session()
 
     def search_good(self, model_name='', part_name='', brand='', type=''):
         keyword = urllib.parse.quote(f"{brand} {type}")
@@ -86,8 +87,53 @@ class ZkhCrawler:
     def get_cheap(self, html):
         pass
 
+    def get_rsa_key(self):
+        # cookies = {
+        #     'sensorsdata2015jssdkcross': '%7B%22distinct_id%22%3A%2218bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMThiZmNjM2Y3NDJjNWYtMGEyYTIzZDFhNTY2MzA4LTE2NTI1NjM0LTE0ODQ3ODQtMThiZmNjM2Y3NDMxMGMzIn0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2218bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3%22%7D',
+        #     'sensorsdata2015session': '%7B%7D',
+        #     'webSource': 'https%3A%2F%2Fwww.google.com.hk%2F',
+        #     '_bl_uid': 'UdlRXpabbptcnda82ngOiRvo3vm2',
+        #     'AGL_USER_ID': '78392bb4-56bc-42bf-b3bd-b5cbcd3883c3',
+        #     'utmStore': '%7B%22flow_type%22%3A%22%E5%85%8D%E8%B4%B9%22%7D',
+        #     'JSESSIONID': 'C7186356E14BBC435C4A16C286E3F84E',
+        #     '_znt': '91.34',
+        #     'anonymous_id': '18bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3',
+        #     'citycode': '%7B%22provinceName%22%3A%22%E5%B9%BF%E4%B8%9C%E7%9C%81%22%2C%22cityName%22%3A%22%E6%B7%B1%E5%9C%B3%E5%B8%82%22%2C%22provinceCode%22%3A440000%2C%22cityCode%22%3A440300%7D',
+        # }
+        cookies = None
+        headers = {
+            'authority': 'www.zkh.com',
+            'accept': 'application/json, text/plain, */*',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'cache-control': 'no-cache',
+            # 'cookie': 'sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2218bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMThiZmNjM2Y3NDJjNWYtMGEyYTIzZDFhNTY2MzA4LTE2NTI1NjM0LTE0ODQ3ODQtMThiZmNjM2Y3NDMxMGMzIn0%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2218bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3%22%7D; sensorsdata2015session=%7B%7D; webSource=https%3A%2F%2Fwww.google.com.hk%2F; _bl_uid=UdlRXpabbptcnda82ngOiRvo3vm2; AGL_USER_ID=78392bb4-56bc-42bf-b3bd-b5cbcd3883c3; utmStore=%7B%22flow_type%22%3A%22%E5%85%8D%E8%B4%B9%22%7D; JSESSIONID=C7186356E14BBC435C4A16C286E3F84E; _znt=91.34; anonymous_id=18bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3; citycode=%7B%22provinceName%22%3A%22%E5%B9%BF%E4%B8%9C%E7%9C%81%22%2C%22cityName%22%3A%22%E6%B7%B1%E5%9C%B3%E5%B8%82%22%2C%22provinceCode%22%3A440000%2C%22cityCode%22%3A440300%7D',
+            'flow-type': '%E5%85%8D%E8%B4%B9',
+            'platform_type': 'JavaScript',
+            'pragma': 'no-cache',
+            'referer': 'https://www.zkh.com/search.html?keywords=%E4%BA%9A%E5%BE%B7%E5%AE%A2%20HFR16N&hasLinkWord=1',
+            'sec-ch-ua': '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            # 'uber-trace-id': 'bdbeb64c170083747073810013f15812:bdbeb64c17008374:0:1',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+            'utm-search-keywords': '%E4%BA%9A%E5%BE%B7%E5%AE%A2%20HFR16N,AIRTAC%2F%E4%BA%9A%E5%BE%B7%E5%AE%A2%20HFR16N,AIRTAC%2F%E4%BA%9A%E5%BE%B7%E5%AE%A2%2016N',
+            'x-sc-anonymous-id': '18bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3',
+        }
+
+        params = {
+            'traceId': self.js.call('getTraceId'),
+        }
+
+        response = self.session.get('https://www.zkh.com/zkhweb/zkhAuth/rsaKey', params=params, cookies=cookies,
+                                headers=headers)
+        return response.json()
 
     def req_price(self):
+        res_rsa_key = self.get_rsa_key()
+
         trace_id = self.js.call("getTraceId")
         # TODO
         # trace_id = '294042031700817434505'
@@ -97,7 +143,7 @@ class ZkhCrawler:
             "AE2959677",
             "AE2970409"
         ]
-        res = self.js.call("get_cipher_and_headers", trace_id, data)
+        res = self.js.call("get_cipher_and_headers", trace_id, data, res_rsa_key['result']['rsaKey'], res_rsa_key['result']['rsaGroup'])
         print(res)
 
         cookies = {
@@ -138,7 +184,7 @@ class ZkhCrawler:
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
             'x-akc': res['x-akc'],
             'x-rgn': res['x-rgn'],
-            'x-sc-anonymous-id': '18bfb1fd336195-0e70cb6534bec1-26031051-2073600-18bfb1fd3374a6',
+            # 'x-sc-anonymous-id': '18bfcc3f742c5f-0a2a23d1a566308-16525634-1484784-18bfcc3f74310c3',
         }
 
         params = {
@@ -149,7 +195,7 @@ class ZkhCrawler:
             'cipher': res['cipher'],
         }
 
-        response = requests.post(
+        response = self.session.post(
             'https://www.zkh.com/servezkhApi/preferential/display/enc/price',
             params=params,
             cookies=cookies,

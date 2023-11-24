@@ -1,7 +1,8 @@
+window = global;
 const forge = require('node-forge');
 const crypto_js = require('crypto-js')
-const NodeRSA = require('node-rsa');
-window = global;
+const jsencrypt = require('jsencrypt')
+// const NodeRSA = require('node-rsa');
 var loader;
 var ba_encrypt;
 !(function (l) {
@@ -920,9 +921,9 @@ var ba_encrypt;
 );
 
 
-o = '-----BEGIN PUBLIC KEY-----' +
-    'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbY2WDZ40at3cyZ/OlxhYPPdwE4w38gVJIBJwv/lLGFIs2pUfcWxeeFol5FJj5H4yefW8EDE/rXj3A4MD9pn/Cx/1E3NCiCxRgvAeOECJ6YNZFG8ELtYUD2dZS0iDBnRbzZqaqzf/BECVX/zfcabTzC9qvoQDJPpyQviHh0+QBNQIDAQAB' +
-    '-----END PUBLIC KEY-----'
+// o = '-----BEGIN PUBLIC KEY-----' +
+//     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbY2WDZ40at3cyZ/OlxhYPPdwE4w38gVJIBJwv/lLGFIs2pUfcWxeeFol5FJj5H4yefW8EDE/rXj3A4MD9pn/Cx/1E3NCiCxRgvAeOECJ6YNZFG8ELtYUD2dZS0iDBnRbzZqaqzf/BECVX/zfcabTzC9qvoQDJPpyQviHh0+QBNQIDAQAB' +
+//     '-----END PUBLIC KEY-----'
 o = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBCW08wCzCOzs5qU7RxL0VYV7TBZr3rrYYqFrI1Nr1Na+FP0B52ffsIqioES8tZEqDXQ59Ksd9rFHutXsRWB6urfBb+MJfmsXynp/2IVhHq+DK68vptgzkGadT8w51uyllExRBj3t2cmkqxrzdrIyCMIXNdnGRCNwJ/taiwftNOQIDAQAB"
 c = "1700812808417"
 navigator = {}
@@ -958,27 +959,27 @@ get_E = function () {
     return [N, crypto_js.enc.Latin1.parse(N)]
 }
 
-get_cipher_and_headers = function (traceId, data) {
+/**
+ *
+ * @param traceId
+ * @param data
+ * @param rsaKey
+ * @param rsaGroup
+ * @returns {{"x-akc": "", "x-rgn": "", "cipher": ""}}
+ */
+get_cipher_and_headers = function (traceId, data, rsaKey, rsaGroup) {
+    o = rsaKey
+    c = rsaGroup
     d = get_E()
     N = d[0]
     E = d[1]
-
-    // 创建 RSA 实例
-    const key = new NodeRSA();
-
-    // 设置公钥
-    key.importKey(o, 'pkcs8-public');
-
-    // 加密数据
-    const encryptedData = key.encrypt(N, 'base64');
-
-    // console.log('加密后的数据：', encryptedData);
-
-
+    let s = new jsencrypt();
+    s.setPublicKey(o)
+    const encryptedData = s.encrypt(N)
     // 准备HTTP请求的headers
     const headers = {
         'x-akc': encryptedData,
-        'x-rgn': c // 这里填写对应的区域值
+        'x-rgn': c.toString() // 这里填写对应的区域值
     };
 
 
@@ -993,13 +994,19 @@ get_cipher_and_headers = function (traceId, data) {
     return headers
 }
 
+/**
+ * 获取TraceId
+ * @param e
+ * @param t
+ * @returns {""}
+ */
 getTraceId = function (e = 8, t = !0) {
     var n = ""
         , n = Math.ceil(1e14 * Math.random()).toString().substr(0, e || 4);
     return t && (n += Date.now()),
         n
 }
-
+//
 // traceId = getTraceId()
 // // // console.log(traceId)
 // var d = get_E();
@@ -1011,5 +1018,5 @@ getTraceId = function (e = 8, t = !0) {
 //     "AE2959677",
 //     "AE2970409"
 // ]
-// console.log(get_cipher_and_headers(traceId, data));
+// console.log(get_cipher_and_headers(traceId, data, o, c));
 
