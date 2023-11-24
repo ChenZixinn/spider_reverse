@@ -1,3 +1,4 @@
+var window = global;
 (window.webpackJsonp = window.webpackJsonp || []).push([[2], [, function (t, e, n) {
     var r = n(853)
         , o = n(854)
@@ -22023,3 +22024,6 @@
             })
     }
 ]]);
+
+aaa=  window.webpackJsonp[0][1][574]
+console.log(aaa)

@@ -1,3 +1,4 @@
+var window = global;
 (window.webpackJsonp = window.webpackJsonp || []).push([[3], [, , , , , , , , , , , , , , , , function(t, L, e) {
     var n, o, r, a, i, c, l, s, u, f, p, m, d, y, g, b, h, v, x, O, j, E, w, N, S, _, P, k, C, z, I, T, U, F, A, H, B, W, q, J, V, Y, G, K, Z, $, Q, X, ee, te, ne, oe, re, ae, ie, ce, le, se, ue, fe, pe, me, de, ye, ge, be, he, ve, xe, Oe, M, R;
     function D(e) {
@@ -54834,3 +54835,5 @@
     u(u.s = 556))
 }
 ]]);
+aaa=  window.webpackJsonp[0][1][893]
+console.log(aaa)

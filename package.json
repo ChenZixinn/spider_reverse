@@ -4,7 +4,10 @@
     "@babel/traverse": "^7.23.2",
     "babel": "^6.23.0",
     "canvas": "^2.11.2",
-    "crypto-js": "^4.1.1",
-    "jsdom": "^22.1.0"
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.2.0",
+    "jsdom": "^22.1.0",
+    "node-forge": "^1.3.1",
+    "node-rsa": "^1.1.1"
   }
 }
