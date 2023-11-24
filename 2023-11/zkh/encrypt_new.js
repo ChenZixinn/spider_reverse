@@ -953,12 +953,14 @@ navigator = {}
 //     }
 // }
 
-get_E = function () {
+get_N_E = function () {
     t = (new Date).getTime().toString()
     N = (t + t + t).substring(0, 32)
     return [N, crypto_js.enc.Latin1.parse(N)]
 }
-
+// d = get_E()
+// N = d[0]
+// E = d[1]
 /**
  *
  * @param traceId
@@ -967,12 +969,10 @@ get_E = function () {
  * @param rsaGroup
  * @returns {{"x-akc": "", "x-rgn": "", "cipher": ""}}
  */
-get_cipher_and_headers = function (traceId, data, rsaKey, rsaGroup) {
+get_cipher_and_headers = function (traceId, data, rsaKey, rsaGroup, N, E) {
     o = rsaKey
     c = rsaGroup
-    d = get_E()
-    N = d[0]
-    E = d[1]
+
     let s = new jsencrypt();
     s.setPublicKey(o)
     const encryptedData = s.encrypt(N)
@@ -1020,3 +1020,18 @@ getTraceId = function (e = 8, t = !0) {
 // ]
 // console.log(get_cipher_and_headers(traceId, data, o, c));
 
+decrypt = function (data, E){
+
+    // 使用ECB模式和PKCS7填充加密请求数据
+    a = loader(398)
+
+    let n = a.decrypt(data, E, {
+        mode: crypto_js.mode.ECB,
+        padding: crypto_js.pad.Pkcs7
+    })
+    return JSON.parse(n.toString(crypto_js.enc.Utf8))
+}
+
+// let res = decrypt("ZBKNED6rIE3FLgLah5LU9Ubx978EkQviXBRsmHzJ77yLcmNNEbcje4fQvOGVa1mXjtoMw6cZsIY4D9hzPQ+JXtrgXDECAVE2ryxy+RDVZaZm0Bqm2SvvPD25xezvCV+3EiPftT/+IACk4cwm+XTeHjXdDm4fFV1608qB2zKSckFqqX69Z16VDYRjovmfUJI+mIgPky4mZ3bDIhENiHc+8yUBXjAr0DdRi7oIEP94YX6/TM6kpQdWzVgCdV5FPfTO59zSyjdb9fJ3TQJB8oinVFlix6+dM54kkWVIKqUxn5BVSp+GpEgWRqtuCDyaF3+nVnxDR0u6/fqjqBRKkMhCKecNkzMKvyPmRzxzc/LDGsHUrNLD7MH2OGY7JZFVxPsdMc/paCtjhIMEJu9EYj6MtvxHCCZb/fO0dOn/0mg4ujMI0Iabz0j9lg7s1MJ1tp6L+on856HAwTW90jNyTyZ8AsMUKCdSYuHaEmvpxIAhJNu/HhIIdkEN1DO35zNkFF/iae+U1oYluv7bFC3UXCdQ58WmzfPKlRUy2/7A+OFZTzzPoSxKEAPES8qE9/RwukyO+6ODwEwzkIA79AGM2Ur0X6P4uay1mbd7HYSK3oJvGzWWAT0SsZP8RbdUtMdBmev1vcfOFBfXkT54smH2fE2nWWiiHK6TRyDtuHVoRldXMcvUzuz6AysJhcQizK+rNDRbQ1sgE2WbNOg9oK1C/9qYibi6Sl3VBYBrIbXu8ypHj2M=");
+
+// console.log(res);

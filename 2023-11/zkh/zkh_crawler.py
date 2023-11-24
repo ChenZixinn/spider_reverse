@@ -136,6 +136,9 @@ class ZkhCrawler:
 
         trace_id = self.js.call("getTraceId")
         # TODO
+        N_E = self.js.call("get_N_E")
+        N = N_E[0]
+        E = N_E[1]
         # trace_id = '294042031700817434505'
         data = [
             "FU8443",
@@ -143,7 +146,7 @@ class ZkhCrawler:
             "AE2959677",
             "AE2970409"
         ]
-        res = self.js.call("get_cipher_and_headers", trace_id, data, res_rsa_key['result']['rsaKey'], res_rsa_key['result']['rsaGroup'])
+        res = self.js.call("get_cipher_and_headers", trace_id, data, res_rsa_key['result']['rsaKey'], res_rsa_key['result']['rsaGroup'], N, E)
         print(res)
 
         cookies = {
@@ -203,6 +206,8 @@ class ZkhCrawler:
             json=json_data,
         )
         print(response.text)
+        res = self.js.call("decrypt", response.text, E)
+        print(res)
 
 
 if __name__ == '__main__':
