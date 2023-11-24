@@ -735,7 +735,7 @@ var genTraceId = function() {
     return e && (n += Date.now()), n
 }
 
-// s = 'body={"brandId":"","catalogueId":"260844","cityCode":511000,"clp":true,"extraFilter":{"inStock":false,"showIndustryFeatured":false},"from":0,"fz":false,"keyword":"","productFilter":{"brandIds":[""],"properties":{}},"rangeFilter":null,"searchType":{"notNeedCorrect":false},"size":20,"sort":0}&params={"traceId":"546432811611720786126"}&sign_token=48bccd43c6304110af2e4beb71946e8e'
-// r = '48bccd43c6304110af2e4beb71946e8e'
-// console.log(encrypt(s, r))
+s = 'body={"brandId":"","catalogueId":"260844","cityCode":511000,"clp":true,"extraFilter":{"inStock":false,"showIndustryFeatured":false},"from":0,"fz":false,"keyword":"","productFilter":{"brandIds":[""],"properties":{}},"rangeFilter":null,"searchType":{"notNeedCorrect":false},"size":20,"sort":0}&params={"traceId":"546432811611720786126"}&sign_token=48bccd43c6304110af2e4beb71946e8e'
+r = '48bccd43c6304110af2e4beb71946e8e'
+console.log(encrypt(s, r))
 // console.log(genTraceId())
