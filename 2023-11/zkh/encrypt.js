@@ -1,5 +1,6 @@
 const forge = require('node-forge');
-
+const crypto_js = require('crypto-js')
+window = global;
 var loader;
 !function(l) {
     function e(e) {
@@ -111,20 +112,22 @@ var loader;
 
 
 
-
-
-
-
-
-
-
-
 o = '-----BEGIN PUBLIC KEY-----' +
     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbY2WDZ40at3cyZ/OlxhYPPdwE4w38gVJIBJwv/lLGFIs2pUfcWxeeFol5FJj5H4yefW8EDE/rXj3A4MD9pn/Cx/1E3NCiCxRgvAeOECJ6YNZFG8ELtYUD2dZS0iDBnRbzZqaqzf/BECVX/zfcabTzC9qvoQDJPpyQviHh0+QBNQIDAQAB' +
     '-----END PUBLIC KEY-----'
 c = "1700726408227"
 navigator = {}
-
+l = {}
+l.init = function(t) {
+                if (t instanceof ArrayBuffer && (t = new Uint8Array(t)),
+                (t instanceof Int8Array || "undefined" != typeof Uint8ClampedArray && t instanceof Uint8ClampedArray || t instanceof Int16Array || t instanceof Uint16Array || t instanceof Int32Array || t instanceof Uint32Array || t instanceof Float32Array || t instanceof Float64Array) && (t = new Uint8Array(t.buffer,t.byteOffset,t.byteLength)),
+                t instanceof Uint8Array) {
+                    for (var e = t.byteLength, r = [], i = 0; i < e; i++)
+                        r[i >>> 2] |= t[i] << 24 - i % 4 * 8;
+                    n.call(this, r, e)
+                } else
+                    n.apply(this, arguments)
+            }
 Latin1 = {
             stringify: function(t) {
                 for (var e = t.words, n = t.sigBytes, r = [], i = 0; i < n; i++) {
@@ -138,7 +141,7 @@ Latin1 = {
                     n[r >>> 2] |= (255 & t.charCodeAt(r)) << 24 - r % 4 * 8;
                 return new l.init(n,e)
             }
-        },
+        }
 
 get_E = function (){
     t  = (new Date).getTime().toString()
@@ -148,8 +151,6 @@ get_E = function (){
 }
 
 case31 = function (traceId) {
-
-
     // 设置公钥
     const publicKey = o; // 这里填写您的公钥
     const publicKeyPem = forge.pki.publicKeyFromPem(publicKey);
@@ -159,28 +160,22 @@ case31 = function (traceId) {
         return forge.util.encode64(publicKey.encrypt(data));
     }
 
-    // 准备要加密的数据
-    const dataToEncrypt = traceId; // 这里填写您要加密的数据
-
     // 使用公钥加密
-    const encryptedData = encryptWithPublicKey(dataToEncrypt, publicKeyPem);
+    const encryptedData = encryptWithPublicKey(traceId, publicKeyPem);
     // 准备HTTP请求的headers
     const headers = {
         'x-akc': encryptedData,
         'x-rgn': c // 这里填写对应的区域值
     };
 
-// 准备HTTP请求的数据
-    const requestData = {
-        // ... 在这里添加请求的数据
-    };
+    console.log(headers)
 
     // 使用ECB模式和PKCS7填充加密请求数据
-    const cipher = forge.cipher.createCipher('AES-ECB', '...'); // 这里填写您的密钥
-    cipher.start({iv: ''});
-    cipher.update(forge.util.createBuffer(JSON.stringify(requestData), 'utf8'));
-    cipher.finish();
-    const encryptedRequestData = cipher.output.getBytes();
+    // const cipher = forge.cipher.createCipher('AES-ECB', '...'); // 这里填写您的密钥
+    // cipher.start({iv: ''});
+    // cipher.update(forge.util.createBuffer(JSON.stringify(requestData), 'utf8'));
+    // cipher.finish();
+    // const encryptedRequestData = cipher.output.getBytes();
 
 }
 
@@ -190,8 +185,8 @@ getTraceId = function (e = 8, t = !0) {
     return t && (n += Date.now()),
         n
 }
-// traceId = getTraceId()
-// console.log(case31(traceId));
+traceId = getTraceId()
+console.log(case31(traceId));
 
 console.log(get_E());
 
