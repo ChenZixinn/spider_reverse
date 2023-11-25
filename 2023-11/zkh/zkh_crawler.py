@@ -1,6 +1,9 @@
+import json
+import sys
 import urllib.parse
 
 import execjs
+import pandas as pd
 import requests
 from commom.settings import *
 from lxml import etree
@@ -43,18 +46,59 @@ class ZkhCrawler:
             'sensorsdata2015jssdkcross': '%7B%22distinct_id%22%3A%2218bf5e2df542a3-021cb9b252742a6-26031051-2073600-18bf5e2df558a9%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMThiZjVlMmRmNTQyYTMtMDIxY2I5YjI1Mjc0MmE2LTI2MDMxMDUxLTIwNzM2MDAtMThiZjVlMmRmNTU4YTkifQ%3D%3D%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2218bf5e2df542a3-021cb9b252742a6-26031051-2073600-18bf5e2df558a9%22%7D',
             'JSESSIONID': '8EC55BFB16028C00C8F456CA14C541EB',
         }
+        self.cookies = None
         self.proxies = PROXIES
         self.proxies = None
         self.session = requests.session()
+        self.type = ""
+        self.result_data = {
+            "all_goods_data": {},
+            "min_price_data": {}
+        }
 
     def search_good(self, model_name='', part_name='', brand='', type=''):
-        keyword = urllib.parse.quote(f"{brand} {type}")
+        """
+        根据品牌和型号搜索，模块名称和标准件名称可以不传
+        Args:
+            model_name: 模块名称
+            part_name: 标准/非标件名称
+            brand: 品牌
+            type: 型号
+
+        Returns:
+            [所有商品，最低价格商品]
+        """
+        self.type = type
+        keyword = urllib.parse.quote(f"{brand}{type}")
+        if '定制' in brand:
+            keyword = urllib.parse.quote(f"{part_name}{type}")
+        # 搜索页面的结果，获取页面中的商品列表。并将数据转为json
         html = self.req_search(keyword)
         goods_data = self.get_all_goods(html)
-        self.get_cheap(html)
+        if not goods_data:
+            return self.result_data
+        # 页面的数据不包含价格，需要通过另一个请求获取。需要传入商品的proSkuNo列表
+        pro_sku_no_list = self.get_pro_sku_no(goods_data)
+        price_data = self.req_price(pro_sku_no_list)
 
+        return self.merge_json(goods_data, price_data)
+
+    def get_pro_sku_no(self, goods_data):
+        pro_sku_no_list = []
+        for goods in goods_data:
+            if goods.get("proSkuNo"):
+                pro_sku_no_list.append(goods.get("proSkuNo"))
+        return pro_sku_no_list
 
     def req_search(self, keyword):
+        """
+
+        Args:
+            keyword: 查询的关键词
+
+        Returns:
+
+        """
         response = requests.get(
             f'https://www.zkh.com/search.html?keywords={keyword}',
             cookies=self.cookies,
@@ -62,27 +106,41 @@ class ZkhCrawler:
             proxies=self.proxies
         )
         # 将text写入到html文件
-        with open('zkh.html', 'w', encoding='utf-8') as f:
-            f.write(response.text)
+        # with open('zkh.html', 'w', encoding='utf-8') as f:
+        #     f.write(response.text)
         # 转为xpath
-        html = etree.HTML(response.text)
-        total = html.xpath("//span[@class='filter-total']/b/text()")
-        if not total or total == '0':
-            raise Exception(f"商品 '{keyword}' 无搜索结果")
-        return html
+        # html = etree.HTML(response.text)
+        # total = html.xpath("//span[@class='filter-total']/b/text()")
+        # if not total or total == '0':
+        #     raise Exception(f"商品 '{keyword}' 无搜索结果")
+        return response.text
 
-    def get_all_goods(self, html):
-        goods_list = html.xpath("//div[@class='goods-item-wrap-new clearfix common-item-wrap']")
-        goods_data = []
-        for goods in goods_list:
-            # 获取文本
-            title = get_text(goods, ".//div[contains(@class, 'goods-name')]/@title", 0)
-            integer = get_text(goods, ".//span[@class='integer']/text()", 0)
-            decimal = get_text(goods, ".//span[@class='decimal']/text()", 0)
-            unit = get_text(goods, ".//span[@class='unit']/text()", 0)
-            material_no = get_text(goods, ".//div[contains(@class,'material-no')]/span/text()", -1)
-            goods_data.append({"title":title, "integer": integer, "decimal":decimal, "unit":unit, "material_no":material_no})
-        return goods_data
+    def get_all_goods(self, text):
+        # goods_list = html.xpath("//div[@class='goods-item-wrap-new clearfix common-item-wrap']")
+        # goods_data = []
+        # for goods in goods_list:
+        #     # 获取文本
+        #     title = get_text(goods, ".//div[contains(@class, 'goods-name')]/@title", 0)
+        #     integer = get_text(goods, ".//span[@class='integer']/text()", 0)
+        #     decimal = get_text(goods, ".//span[@class='decimal']/text()", 0)
+        #     unit = get_text(goods, ".//span[@class='unit']/text()", 0)
+        #     material_no = get_text(goods, ".//div[contains(@class,'material-no')]/span/text()", -1)
+        #     goods_data.append({"title":title, "integer": integer, "decimal":decimal, "unit":unit, "material_no":material_no})
+        # return goods_data
+
+        # 正则匹配json内容: "content": ([.*?])
+        import json
+        import re
+        # json.loads(re.findall("window.__INITIAL_DATA__ =(.*?);</script>", text)[0].replace("undefined", '""'))
+        js_text = re.findall("window.__INITIAL_DATA__ =(.*?);</script>", text)
+        if not js_text:
+            return []
+        js_data = json.loads(js_text[0].replace("undefined", '""')).get('catalog', {}).get("content", [])
+        # valid_data = []
+        # for d in js_data:
+        #     if self.type in d.get("proMaterialNo"):
+        #         valid_data.append(d)
+        return js_data
 
     def get_cheap(self, html):
         pass
@@ -131,20 +189,56 @@ class ZkhCrawler:
                                 headers=headers)
         return response.json()
 
-    def req_price(self):
+    def merge_json(self, json1, json2):
+        """
+        合并商品列表和价格列表，返回合并后的所有数据、最低价格的商品
+        Args:
+            json1: 原始商品列表
+            json2: 价格列表
+
+        Returns:
+            [所有商品列表数据, 最低商品数据]
+        """
+        # 创建一个字典，用于按照skuNo合并数据
+        merged_data = {}
+
+        # 合并第一个JSON数据
+        for item in json1:
+            sku_no = item['proSkuNo']
+            if sku_no not in merged_data:
+                merged_data[sku_no] = item
+            else:
+                merged_data[sku_no].update(item)
+        min_price = sys.maxsize
+        min_price_goods = None
+        # 合并第二个JSON数据
+        for item in json2:
+            sku_no = item['skuNo']
+            if sku_no not in merged_data:
+                merged_data[sku_no] = item
+            else:
+                merged_data[sku_no].update(item)
+            merged_data[sku_no]['url'] = f'https://www.zkh.com/item/{sku_no}.html'
+            if merged_data[sku_no]['sellingPrice'] < min_price:
+                min_price = merged_data[sku_no]['sellingPrice']
+                min_price_goods = merged_data[sku_no]
+        # 将合并后的数据转换为JSON字符串
+        # merged_json = json.dumps(list(merged_data.values()))
+        self.result_data['min_price_data'] = {min_price_goods['proSkuNo']: min_price_goods}
+        self.result_data['all_goods_data'] = merged_data
+        return self.result_data
+
+    def req_price(self, data):
         res_rsa_key = self.get_rsa_key()
 
         trace_id = self.js.call("getTraceId")
-        # TODO
+        N_E = self.js.call("get_N_E")
+        N = N_E[0]
+        E = N_E[1]
         # trace_id = '294042031700817434505'
-        data = [
-            "FU8443",
-            "FU8448",
-            "AE2959677",
-            "AE2970409"
-        ]
-        res = self.js.call("get_cipher_and_headers", trace_id, data, res_rsa_key['result']['rsaKey'], res_rsa_key['result']['rsaGroup'])
-        print(res)
+
+        res = self.js.call("get_cipher_and_headers", trace_id, data, res_rsa_key['result']['rsaKey'], res_rsa_key['result']['rsaGroup'], N, E)
+        # print(res)
 
         cookies = {
             'AGL_USER_ID': '213cdeb8-afdf-4d0b-a294-941178f47726',
@@ -167,7 +261,7 @@ class ZkhCrawler:
             # 'accept': 'application/json, text/plain, */*',
             # 'accept-language': 'zh-CN,zh;q=0.9',
             # 'cache-control': 'no-cache',
-            # 'content-type': 'application/json;charset=UTF-8',
+            'content-type': 'application/json;charset=UTF-8',
             # # 'cookie': 'AGL_USER_ID=213cdeb8-afdf-4d0b-a294-941178f47726; utmStore=%7B%22flow_type%22%3A%22%E5%85%8D%E8%B4%B9%22%7D; _bl_uid=40l8Xphva48vmXwsmi6mdjt4Ia53; anonymous_id=18bfb1fd336195-0e70cb6534bec1-26031051-2073600-18bfb1fd3374a6; citycode=%7B%22cityCode%22%3A310100%2C%22cityName%22%3A%22%E4%B8%8A%E6%B5%B7%E5%B8%82%22%2C%22provinceCode%22%3A310000%2C%22provinceName%22%3A%22%E4%B8%8A%E6%B5%B7%E5%B8%82%22%7D; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2218bfb1fd336195-0e70cb6534bec1-26031051-2073600-18bfb1fd3374a6%22%2C%22first_id%22%3A%22%22%2C%22props%22%3A%7B%7D%2C%22identities%22%3A%22eyIkaWRlbnRpdHlfY29va2llX2lkIjoiMThiZmIxZmQzMzYxOTUtMGU3MGNiNjUzNGJlYzEtMjYwMzEwNTEtMjA3MzYwMC0xOGJmYjFmZDMzNzRhNiJ9%22%2C%22history_login_id%22%3A%7B%22name%22%3A%22%22%2C%22value%22%3A%22%22%7D%2C%22%24device_id%22%3A%2218bfb1fd336195-0e70cb6534bec1-26031051-2073600-18bfb1fd3374a6%22%7D; sensorsdata2015session=%7B%7D; webSource=https%3A%2F%2Fwww.google.com%2F; p_pub_key=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBCW08wCzCOzs5qU7RxL0VYV7TBZr3rrYYqFrI1Nr1Na+FP0B52ffsIqioES8tZEqDXQ59Ksd9rFHutXsRWB6urfBb+MJfmsXynp/2IVhHq+DK68vptgzkGadT8w51uyllExRBj3t2cmkqxrzdrIyCMIXNdnGRCNwJ/taiwftNOQIDAQAB; p_pub_gr=1700812808417; _znt=13.15; JSESSIONID=6D7058B5E6E9D6C869A47F9EE1781C3E',
             # 'flow-type': '%E5%85%8D%E8%B4%B9',
             # 'origin': 'https://www.zkh.com',
@@ -202,10 +296,56 @@ class ZkhCrawler:
             headers=headers,
             json=json_data,
         )
-        print(response.text)
+        text = response.text
+        res = self.js.call("decrypt", text, E, 'utf-8')
+        return res.get("result", [])
+
+
+def save_data(data, number, file_name):
+    try:
+        df = pd.read_excel(file_name)
+    except FileNotFoundError:
+        df = pd.DataFrame()
+    for key in data:
+        insert_data = {
+            "序号": number,
+            "名称": data[key]['proSkuProductName'].replace("<em>", "").replace("</em>", ""),
+            "制造商型号": key,
+            "单价": data[key]["sellingPrice"],
+            "会员价": data[key]['memberPrice'],
+            "链接": data[key]["url"],
+            "图片列表": data[key]['proImgPath_Z1'],
+        }
+        print(insert_data)
+
+        # 将要插入的数据转换为DataFrame
+        df_insert = pd.DataFrame([insert_data])
+
+        # 将新数据插入到现有数据的末尾
+        df = pd.concat([df, df_insert], ignore_index=True)
+
+    # 将数据保存到Excel文件
+    df.to_excel(file_name, index=False)
+    # 保存到excel文件中
 
 
 if __name__ == '__main__':
-    crawler = ZkhCrawler()
-    # crawler.search_good(brand="亚德客", type='HFR16')
-    crawler.req_price()
+    min_time = sys.maxsize
+    df = pd.read_excel(r"C:\Users\sw1001\Desktop\核价用例测试demo_50.xls", header=3)
+    for index, row in df.iterrows():
+        if index < 17:
+            continue
+        number = row['序号']
+        model_name = row['模块名称']
+        part_name = row['非标件名称']
+        brand = row['材质/牌号']
+        type = row['尺寸/重量/工艺描述']
+
+        crawler = ZkhCrawler()
+        data = crawler.search_good(part_name=part_name, brand=brand, type=type)
+        print(f"所有商品：{data['all_goods_data']}")
+        print(f"最低价格商品:{data['min_price_data']}")
+        if data['all_goods_data']:
+            save_data(data['all_goods_data'], number, 'all_goods1.xlsx')
+        if data['min_price_data']:
+            save_data(data['min_price_data'], number, 'min_price_list1.xlsx')
