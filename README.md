@@ -3387,4 +3387,220 @@ dt、acToken来自第一个接口，后面如果有同样的名称均来自这�
 
 逆向参数生成，获取price接口数据。
 
-（文档后续补充）
+需求是获取商品和价格。
+
+### 1、参数解析
+
+直接搜索，可以看到商品的数据，但是**没有价格**。
+
+价格应该是另外的接口请求得到的，在接口列表可以看到一个叫**price**的接口，但是返回的数据是加密的，所有也不确定是不是这个接口（解密后确实是这个接口）。
+
+#### 1.1 接口加密参数
+
+这个接口的加密参数还是比较多。
+
+![](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231125115922887.png)
+
+![image-20231125115922887](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231125115922887.png)
+
+##### 1.1.1 TriceId
+
+这个是一段随机的字符串，每次请求都会带。同一个接口中需要使用同一个。即如果这个接口里用到了TraceId来加密，请使用同一段字符串。
+
+
+
+##### 1.1.2 cipher
+
+这个是请求的参数，请求价格的商品id。例如：
+
+```python
+["FU8443", "FU8448"]
+```
+
+将这段参数加密后就是cipher。
+
+
+
+##### 1.1.3 X-Akc
+
+##### 1.1.4 X-Rgn
+
+这两个参数的加密位置在一起，就是对类似TraceId或者一些随机字符串加密。需要注意的是加密的方法要和代码里一样，建议使用相同的js包进行加密。
+
+
+
+##### 1.1.5 rsaKey
+
+##### 1.1.6 rsaGroup
+
+这两个参数通过请求接口获取，用于上述参数的加密，是**公钥**。
+
+
+
+### 2、逆向
+
+#### 2.1 加密代码
+
+因为是headers里的加密参数，可以**搜索headers["x-akc"]**来查找，如果代码是混淆的，则可以通过hook。这里直接搜索找到了加密的位置。
+
+![image-20231125123941293](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231125123941293.png)
+
+这里可以看到三个加密参数。
+
+
+
+#### 2.2  扣代码
+
+##### 2.2.1 traceId
+
+这个参数是随机字符串，用以下方法生成即可。
+
+```JS
+getTraceId = function (e = 8, t = !0) {
+    var n = ""
+        , n = Math.ceil(1e14 * Math.random()).toString().substr(0, e || 4);
+    return t && (n += Date.now()),
+        n
+}
+```
+
+
+
+##### 2.2.2 x-rgn
+
+**x-rgn和x-akc**需要先访问**rsaKey**接口，它会返回**rsaKey和rsaGroup**。
+
+```python
+params = {
+            'traceId': self.js.call('getTraceId'),
+        }
+
+        response = self.session.get('https://www.zkh.com/zkhweb/zkhAuth/rsaKey', params=params, cookies=cookies,
+                                headers=headers)
+        return response.json()
+```
+
+返回参数：
+
+```json
+{
+    "code": "0000",
+    "result": {
+        "rsaKey": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5Ud0C1rtI80azjpEHF44YJucGSBTGjRGCxqIq2b1IUaZuJU3+psQyL1hgOTxPwHn9d4uRuguLZdf0iGvnWChZSVBqwCKvyBjkUbTKXYYjyHpCHe1iO+F0ITrXZhUbKTmBZz845mjsw1vx5tWqr9zgId6Gdo5hL9vG18V9dQsG0QIDAQAB",
+        "rsaGroup": 1700884827505
+    }
+}
+```
+
+
+
+**x-rgn**参数就是**rsaGroup**。即上述例子中的“1700884827505”
+
+
+
+##### 2.2.3 x-rgn
+
+先看js，需要公钥publicKey，就是2.2.2中请求返回的rsaKey，传入即可。这里它用到了JSEncrypt这个库，在nodejs中下载相同的库使用相同的方法即可。
+
+```js
+const jsencrypt = require('jsencrypt')
+o = rsaKey
+c = rsaGroup
+
+let s = new jsencrypt();
+s.setPublicKey(o)
+const encryptedData = s.encrypt(N)
+
+const headers = {
+    'x-akc': encryptedData,
+    'x-rgn': c.toString() 
+};
+```
+
+
+
+##### 2.2.4 cipher
+
+这个是难点，因为它用到的**b.a.encrypt**来自webpack打包的代码，所以需要还原。
+
+这里的k.a可以使用**crypto-js**包。
+
+```js
+// 这里的data是列表，具体请查看1.1.1
+cipher: b.a.encrypt(JSON.stringify(t.data), E, {
+                                    // mode: k.a.mode.ECB,
+                                    // padding: k.a.pad.Pkcs7
+                                    mode: crypto_js.mode.ECB,
+                                    padding: crypto_js.pad.Pkcs7
+                                }).toString()
+```
+
+
+
+下一步开始找b.a。代码往上看，可以找到b的定义。
+
+```js
+t = n(398), b = n.n(t)
+```
+
+就是说b为webpack中索引398的代码。
+
+开始构造，先找到加载器。然后把398位置的代码放进去。加载器在runtime~catalogNew.*.js里。
+
+![image-20231125130025892](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231125130025892.png)
+
+```js
+var loader;
+!function(l) {
+    // ...
+    function i(e) {
+        var r;
+        return (t[e] || (r = t[e] = {
+            i: e,
+            l: !1,
+            exports: {}
+        },
+        l[e].call(r.exports, r, r.exports, i),
+        r.l = !0,
+        r)).exports
+    }
+    // ...
+    //var r = (n = window.webpackJsonp = window.webpackJsonp || []).push.bind(n);
+    //n.push = e;
+    //for (var n = n.slice(), o = 0; o < n.length; o++)
+    //    e(n[o]);
+    //var s = r;
+    //a()
+    
+    // 把i定义为全局变量，可以在外部调用
+    loader = i;
+}([
+    // 这里放代码
+    398: function(){}
+]);
+
+```
+
+
+
+398代码中还引用了其他的代码，需要依次导入。另外，部分代码是没有写索引的，需要根据列表中下标的位置判断。例如以下代码，下标是1，因为在数组中1的位置。
+
+![image-20231125130313855](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20231125130313855.png)
+
+
+
+最后使用loader变量加载代码，即可完成这部分加密。
+
+```js
+a = loader(398)
+
+let cipher = a.encrypt(JSON.stringify(data), E, {
+    mode: crypto_js.mode.ECB,
+    padding: crypto_js.pad.Pkcs7
+}).toString()
+headers["cipher"] = cipher
+```
+
+
+
+至此就全部完成了。

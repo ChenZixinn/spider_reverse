@@ -1,5 +1,5 @@
 window = global;
-const forge = require('node-forge');
+// const forge = require('node-forge');
 const crypto_js = require('crypto-js')
 const jsencrypt = require('jsencrypt')
 // const NodeRSA = require('node-rsa');
@@ -88,10 +88,6 @@ var ba_encrypt;
 
 })(
     {
-
-        // 58: function(e, t) {
-        //     e.exports = CryptoJS
-        // },
         398: function (t, e, n) {
             var x;
             t.exports = (x = n(236),
@@ -409,8 +405,7 @@ var ba_encrypt;
                     _map: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
                 },
                 t.enc.Base64)
-        }
-        ,
+        },
         894: function (t, e, n) {
             var i;
             t.exports = (i = n(236),
@@ -558,8 +553,7 @@ var ba_encrypt;
                         t.HmacMD5 = r._createHmacHelper(e)
                 }(Math),
                 i.MD5)
-        }
-        ,
+        },
         895: function (t, e, n) {
             var s;
             t.exports = (t = n(236),
@@ -594,8 +588,7 @@ var ba_encrypt;
                             e.finalize(this._oKey.clone().concat(t))
                     }
                 })))
-        }
-        ,
+        },
         896: function (t, e, n) {
             function i(t, e, n) {
                 var r, o = this._iv;
