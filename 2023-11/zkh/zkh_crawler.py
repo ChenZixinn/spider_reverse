@@ -219,7 +219,7 @@ class ZkhCrawler:
             else:
                 merged_data[sku_no].update(item)
             merged_data[sku_no]['url'] = f'https://www.zkh.com/item/{sku_no}.html'
-            if merged_data[sku_no]['sellingPrice'] < min_price:
+            if 0 < merged_data[sku_no]['sellingPrice'] < min_price:
                 min_price = merged_data[sku_no]['sellingPrice']
                 min_price_goods = merged_data[sku_no]
         # 将合并后的数据转换为JSON字符串
@@ -331,10 +331,8 @@ def save_data(data, number, file_name):
 
 if __name__ == '__main__':
     min_time = sys.maxsize
-    df = pd.read_excel(r"C:\Users\sw1001\Desktop\核价用例测试demo_50.xls", header=3)
+    df = pd.read_excel(r"/Users/tzuxin/Code/suwen/核价用例测试demo_50.xls", header=3)
     for index, row in df.iterrows():
-        if index < 17:
-            continue
         number = row['序号']
         model_name = row['模块名称']
         part_name = row['非标件名称']

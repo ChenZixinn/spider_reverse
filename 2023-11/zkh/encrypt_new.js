@@ -921,38 +921,6 @@ var ba_encrypt;
 );
 
 
-// o = '-----BEGIN PUBLIC KEY-----' +
-//     'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbY2WDZ40at3cyZ/OlxhYPPdwE4w38gVJIBJwv/lLGFIs2pUfcWxeeFol5FJj5H4yefW8EDE/rXj3A4MD9pn/Cx/1E3NCiCxRgvAeOECJ6YNZFG8ELtYUD2dZS0iDBnRbzZqaqzf/BECVX/zfcabTzC9qvoQDJPpyQviHh0+QBNQIDAQAB' +
-//     '-----END PUBLIC KEY-----'
-o = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBCW08wCzCOzs5qU7RxL0VYV7TBZr3rrYYqFrI1Nr1Na+FP0B52ffsIqioES8tZEqDXQ59Ksd9rFHutXsRWB6urfBb+MJfmsXynp/2IVhHq+DK68vptgzkGadT8w51uyllExRBj3t2cmkqxrzdrIyCMIXNdnGRCNwJ/taiwftNOQIDAQAB"
-c = "1700812808417"
-navigator = {}
-// l = {}
-// l.init = function (t) {
-//     if (t instanceof ArrayBuffer && (t = new Uint8Array(t)),
-//     (t instanceof Int8Array || "undefined" != typeof Uint8ClampedArray && t instanceof Uint8ClampedArray || t instanceof Int16Array || t instanceof Uint16Array || t instanceof Int32Array || t instanceof Uint32Array || t instanceof Float32Array || t instanceof Float64Array) && (t = new Uint8Array(t.buffer, t.byteOffset, t.byteLength)),
-//     t instanceof Uint8Array) {
-//         for (var e = t.byteLength, r = [], i = 0; i < e; i++)
-//             r[i >>> 2] |= t[i] << 24 - i % 4 * 8;
-//         n.call(this, r, e)
-//     } else
-//         n.apply(this, arguments)
-// }
-// Latin1 = {
-//     stringify: function (t) {
-//         for (var e = t.words, n = t.sigBytes, r = [], i = 0; i < n; i++) {
-//             var o = e[i >>> 2] >>> 24 - i % 4 * 8 & 255;
-//             r.push(String.fromCharCode(o))
-//         }
-//         return r.join("")
-//     },
-//     parse: function (t) {
-//         for (var e = t.length, n = [], r = 0; r < e; r++)
-//             n[r >>> 2] |= (255 & t.charCodeAt(r)) << 24 - r % 4 * 8;
-//         return {"sigBytes": e, "words": n}
-//     }
-// }
-
 get_N_E = function () {
     t = (new Date).getTime().toString()
     N = (t + t + t).substring(0, 32)
@@ -961,10 +929,12 @@ get_N_E = function () {
 
 /**
  *
- * @param traceId
- * @param data
- * @param rsaKey
- * @param rsaGroup
+ * @param traceId traceId
+ * @param data 制造商型号列表
+ * @param rsaKey 从接口返回的公钥
+ * @param rsaGroup 同上
+ * @param N 方法生成的N参数
+ * @param E 方法生成的E参数
  * @returns {{"x-akc": "", "x-rgn": "", "cipher": ""}}
  */
 get_cipher_and_headers = function (traceId, data, rsaKey, rsaGroup, N, E) {
@@ -1003,20 +973,13 @@ getTraceId = function (e = 8, t = !0) {
     return t && (n += Date.now()),
         n
 }
-//
-// traceId = getTraceId()
-// // // console.log(traceId)
-// var d = get_E();
-// console.log(d[0])
-// console.log(d[1])
-// data = [
-//     "FU8443",
-//     "FU8448",
-//     "AE2959677",
-//     "AE2970409"
-// ]
-// console.log(get_cipher_and_headers(traceId, data, o, c));
 
+/**
+ * 解密返回的数据
+ * @param data
+ * @param E
+ * @returns {any}
+ */
 decrypt = function (data, E){
 
     // 使用ECB模式和PKCS7填充加密请求数据
