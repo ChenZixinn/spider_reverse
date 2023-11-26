@@ -95,7 +95,6 @@ class ZkhCrawler:
             f'https://www.zkh.com/search.html?keywords={keyword}',
             cookies=self.cookies,
             headers=self.headers,
-            proxies=self.proxies
         )
         # 将text写入到html文件
         # with open('zkh.html', 'w', encoding='utf-8') as f:
