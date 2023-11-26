@@ -4,10 +4,7 @@ import urllib.parse
 
 import execjs
 import requests
-from commom.settings import *
-from lxml import etree
 
-from commom.utils import get_text
 
 
 class ZkhCrawler:
@@ -46,8 +43,6 @@ class ZkhCrawler:
             'JSESSIONID': '8EC55BFB16028C00C8F456CA14C541EB',
         }
         self.cookies = None
-        self.proxies = PROXIES
-        self.proxies = None
         self.session = requests.session()
         self.type = ""
         self.result_data = {
@@ -113,17 +108,6 @@ class ZkhCrawler:
         return response.text
 
     def get_all_valid_goods(self, text):
-        # goods_list = html.xpath("//div[@class='goods-item-wrap-new clearfix common-item-wrap']")
-        # goods_data = []
-        # for goods in goods_list:
-        #     # 获取文本
-        #     title = get_text(goods, ".//div[contains(@class, 'goods-name')]/@title", 0)
-        #     integer = get_text(goods, ".//span[@class='integer']/text()", 0)
-        #     decimal = get_text(goods, ".//span[@class='decimal']/text()", 0)
-        #     unit = get_text(goods, ".//span[@class='unit']/text()", 0)
-        #     material_no = get_text(goods, ".//div[contains(@class,'material-no')]/span/text()", -1)
-        #     goods_data.append({"title":title, "integer": integer, "decimal":decimal, "unit":unit, "material_no":material_no})
-        # return goods_data
 
         # 正则匹配json内容: "content": ([.*?])
         import json
