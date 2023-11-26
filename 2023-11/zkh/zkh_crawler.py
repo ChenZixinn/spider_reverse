@@ -216,7 +216,7 @@ class ZkhCrawler:
             else:
                 merged_data[sku_no].update(item)
             merged_data[sku_no]['url'] = f'https://www.zkh.com/item/{sku_no}.html'
-            if merged_data[sku_no]['sellingPrice'] < min_price:
+            if 0 < merged_data[sku_no]['sellingPrice'] < min_price:
                 min_price = merged_data[sku_no]['sellingPrice']
                 min_price_goods = merged_data[sku_no]
         # 将合并后的数据转换为JSON字符串
