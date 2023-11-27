@@ -4,10 +4,7 @@ import urllib.parse
 
 import execjs
 import requests
-from commom.settings import *
-from lxml import etree
 
-from commom.utils import get_text
 
 
 class ZkhCrawler:
@@ -46,8 +43,6 @@ class ZkhCrawler:
             'JSESSIONID': '8EC55BFB16028C00C8F456CA14C541EB',
         }
         self.cookies = None
-        self.proxies = PROXIES
-        self.proxies = None
         self.session = requests.session()
         self.type = ""
         self.result_data = {
@@ -100,7 +95,6 @@ class ZkhCrawler:
             f'https://www.zkh.com/search.html?keywords={keyword}',
             cookies=self.cookies,
             headers=self.headers,
-            proxies=self.proxies
         )
         # 将text写入到html文件
         # with open('zkh.html', 'w', encoding='utf-8') as f:
@@ -113,17 +107,6 @@ class ZkhCrawler:
         return response.text
 
     def get_all_valid_goods(self, text):
-        # goods_list = html.xpath("//div[@class='goods-item-wrap-new clearfix common-item-wrap']")
-        # goods_data = []
-        # for goods in goods_list:
-        #     # 获取文本
-        #     title = get_text(goods, ".//div[contains(@class, 'goods-name')]/@title", 0)
-        #     integer = get_text(goods, ".//span[@class='integer']/text()", 0)
-        #     decimal = get_text(goods, ".//span[@class='decimal']/text()", 0)
-        #     unit = get_text(goods, ".//span[@class='unit']/text()", 0)
-        #     material_no = get_text(goods, ".//div[contains(@class,'material-no')]/span/text()", -1)
-        #     goods_data.append({"title":title, "integer": integer, "decimal":decimal, "unit":unit, "material_no":material_no})
-        # return goods_data
 
         # 正则匹配json内容: "content": ([.*?])
         import json
@@ -216,7 +199,7 @@ class ZkhCrawler:
             else:
                 merged_data[sku_no].update(item)
             merged_data[sku_no]['url'] = f'https://www.zkh.com/item/{sku_no}.html'
-            if merged_data[sku_no]['sellingPrice'] < min_price:
+            if 0 < merged_data[sku_no]['sellingPrice'] < min_price:
                 min_price = merged_data[sku_no]['sellingPrice']
                 min_price_goods = merged_data[sku_no]
         # 将合并后的数据转换为JSON字符串
