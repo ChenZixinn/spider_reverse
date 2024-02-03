@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**[震坤行](#zkh)、[网易易盾](#yidun)、[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
+目前已完成：**[TLS](#tls)、[震坤行](#zkh)、[网易易盾](#yidun)、[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
 
 点击以上链接可跳转到对应文档位置，代码路径格式为**"月份/网站名称/"**。
 
@@ -3608,3 +3608,192 @@ headers["cipher"] = cipher
 
 
 至此就全部完成了。
+
+
+
+# 案例_2024-2
+
+## <span id='tls'>一、TLS指纹</span>
+
+### 1、什么是TLS指纹
+
+TLS指纹是一种用于标识和验证传输层安全性（TLS）连接的方法。TLS是一种用于在网络上加密通信的协议，它的前身是SSL（Secure Sockets Layer）。TLS指纹通常是通过对连接的一些特征信息进行哈希计算而生成的唯一标识。
+
+TLS指纹的主要组成部分包括：
+
+1. **TLS版本号：** 描述使用的TLS协议版本，例如TLS 1.2或TLS 1.3。
+2. **加密算法：** 描述在通信中使用的加密算法，包括对称加密、非对称加密等。
+3. **密钥长度：** 描述使用的加密密钥的长度。
+4. **哈希算法：** 描述用于生成消息摘要的哈希算法。
+5. **证书信息：** 描述服务器的证书，包括颁发机构、有效期等。
+
+TLS指纹的生成过程通常是将上述信息进行哈希计算，以产生一个固定长度的字符串，作为该连接的唯一标识。
+
+
+
+### 2、TLS指纹测试
+
+目标网站：https://match.yuanrenxue.cn/api/match/19?page=1
+
+#### 2.1 浏览器访问
+
+```json
+{
+    "status": "1",
+    "state": "success",
+    "data": [
+        {
+            "value": 7396
+        },
+        {
+            "value": 5018
+        },
+        {
+            "value": 9546
+        },
+        {
+            "value": 4476
+        },
+        {
+            "value": 5297
+        },
+        {
+            "value": 880
+        },
+        {
+            "value": 4644
+        },
+        {
+            "value": 5918
+        },
+        {
+            "value": 3853
+        },
+        {
+            "value": 1572
+        }
+    ]
+}
+```
+
+
+
+正常返回，使用wireshark查看：
+
+![image-20240203121233150](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20240203121233150.png)
+
+
+
+#### 2.2 使用requests访问
+
+```json
+{"status": "0", "error": "page no found"}
+```
+
+requests发送的指纹是固定的，请求容易被拦截
+
+![image-20240203121141164](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20240203121141164.png)
+
+
+
+### 3、TLS指纹构成
+
+```
+TLS版本号、加密算法、密钥长度、哈希算法、证书信息
+JA3 Fullstring:
+  771,
+  4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,
+  35-0-65281-18-5-16-43-27-10-23-45-13-11-65037-17513-51,
+  29-23-24,
+  0
+
+根据以上数据md5加密生成
+JA3: 
+	de878efbf0d5761f90f1feeaafd3516a
+```
+
+
+
+### 4、伪造指纹
+
+#### 4.1 修改requests源码
+
+requests底层用urllib3发送请求，urllib3的TLS指纹生成有固定的支持算法，可以通过修改这部份变量，伪造不同的TLS指纹。
+
+```python
+import requests
+
+# 0、普通请求
+res = requests.get('https://match.yuanrenxue.cn/api/match/19?page=1')
+print(res.text)  # TLS指纹校验不通过
+
+# 1、修改urllib3源码
+import urllib3
+
+urllib3.util.ssl_.DEFAULT_CIPHERS = ":".join(
+    [
+        "ECDHE+AESGCM",
+        "ECDHE+CHACHA20",
+        "DHE+AESGCM",
+        "DHE+CHACHA20",
+        "ECDH+AESGCM",
+        "DH+AESGCM",
+        # 修改掉部分内容
+        # "ECDH+AES",
+        # "DH+AES",
+        # "RSA+AESGCM",
+        # "RSA+AES",
+        "!aNULL",
+        "!eNULL",
+        "!MD5",
+        "!DSS",
+    ]
+)
+
+res = requests.get('https://match.yuanrenxue.cn/api/match/19?page=1')
+print(res.text)  # 通过
+```
+
+
+
+#### 4.2 curl_cffi库
+
+底层使用curl工具实现
+
+```python
+
+# 2、用curl_cffi通过验证
+from curl_cffi import requests
+
+res = requests.get('https://match.yuanrenxue.cn/api/match/19?page=1', impersonate="chrome110")  # 指定生成浏览器指纹
+print(res.text)  # 通过
+```
+
+
+
+#### 4.3 (go)CycleTLS
+
+使用这个库可以指定ja3
+
+```go
+package main
+
+import (
+	"github.com/Danny-Dasilva/CycleTLS/cycletls"
+	"log"
+)
+
+func main() {
+	cycle := cycletls.Init()
+	response, err := cycle.Do("https://tls.browserleaks.com/json", cycletls.Options{
+		Body: "",
+		// 指定ja3 fullstring
+		Ja3:  "771,4865-4866-4867-49195-49199-49196-49200-52393-52392-49171-49172-156-157-47-53,17513-65281-11-51-13-5-10-45-27-16-65037-18-0-23-35-43,29-23-24,0",
+	}, "GET")
+	if err != nil {
+		log.Print(err)
+	}
+	log.Print(response)
+}
+```
+
