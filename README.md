@@ -996,7 +996,7 @@ iP = {
 - 完成登陆请求中的json_key参数加密方法
 - 解析返回的接口
 
- [tianaw.js](2023-6_before/tianaw.js)
+ [tianaw.js](2023_06/tianaw.js)
 
 
 
@@ -1157,7 +1157,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 通过js生产请求参数
 
- [aqi.js](2023-6_before/aqi.js) 
+ [aqi.js](2023_06/aqi.js) 
 
 ![image-20230705220910980](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230705220910980.png)
 
@@ -1165,7 +1165,7 @@ url：https://www.aqistudy.cn/historydata/monthdata.php?city=%E5%8C%97%E4%BA%AC
 
 
 
-# 案例_2023-7
+# 案例_2023_07
 
 
 
@@ -1253,7 +1253,7 @@ console.log(get_cookie('E7FC4E89FD5A4E550E19A8BE2061BD16BE4C0DB3'));
 
 ### 3、发起请求、生成cookie
 
-[代码](2023-7/day2_cookie加密等/spider_xueqiu/ali.py)
+[代码](2023_07/day2_cookie加密等/spider_xueqiu/ali.py)
 
 ```python
 import re
@@ -1807,7 +1807,7 @@ print(response)
 
 
 
-# 案例_2023-8
+# 案例_2023_08
 
 
 
@@ -1829,7 +1829,7 @@ print(response)
 
 ![image-20230808211628612](https://raw.githubusercontent.com/ChenZixinn/img_repository/master/image-20230808211628612.png)
 
-加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023-8/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
+加密的位置就在这里，然后去扣所有的代码，最后会生成[js文件](./2023_08/spider_qichacha/qichacha_.js)，调用run方法即可生成接口参数。
 
 
 
@@ -2198,7 +2198,7 @@ loader(0) // 这里就拿到了n(2132)对应的方法
 
 #### 3.3、替换掉原来的参数
 
-最终的js代码是这样的。[yuekeyun.js](2023-8/spider_yuekeyun/yuekeyun.js) 
+最终的js代码是这样的。[yuekeyun.js](2023_08/spider_yuekeyun/yuekeyun.js) 
 
 ```js
 // 全局变量
@@ -2267,7 +2267,7 @@ response = requests.get(url, params=params, cookies=cookies, headers=headers)
 
 ### 二、逆向js
 
-[js代码](./2023-8/spider_boss/boss_zptoken.js)
+[js代码](./2023_08/spider_boss/boss_zptoken.js)
 
 #### 1、找js文件
 
@@ -2341,7 +2341,7 @@ function get_zp_token(sseed, sts) {
 
 
 
-# 案例_2023-9
+# 案例_2023_09
 
 
 
@@ -2387,7 +2387,7 @@ _0x2c5e7b['apply'](_0x275c89, _0x301f8b).length === 28
 
 #### 2.3 扣js
 
-[巨量.js](2023-9/trendinsight/juliang.js)
+[巨量.js](2023_09/trendinsight/juliang.js)
 
 断点后我们直接进入方法，在两个断点中可以分别查看看**方法和参数**，将所有代码扣下来，将两个加密的方法用变量接收，并且**补齐环境**，包括**document.cookie**。
 
@@ -2422,7 +2422,7 @@ function get_param(msToken, url, body) {
 
 **tips：**cookie具有时效性，如果请求失效或者signature的值错误，可能是cookie的问题。
 
-[代码：](2023-9/trendinsight/juliang.py)
+[代码：](2023_09/trendinsight/juliang.py)
 
 ```python
 import re
@@ -2970,7 +2970,7 @@ function get_v(){
 
 
 
-# 案例_2023-10
+# 案例_2023_10
 
 
 
@@ -3381,7 +3381,7 @@ dt、acToken来自第一个接口，后面如果有同样的名称均来自这�
 
 
 
-# 案例_2023-11
+# 案例_2023_11
 
 ## <span id='zkh'>一、震坤行</span>
 
@@ -3611,7 +3611,7 @@ headers["cipher"] = cipher
 
 
 
-# 案例_2024-2
+# 案例_2024_02
 
 ## <span id='tls'>一、TLS指纹</span>
 
