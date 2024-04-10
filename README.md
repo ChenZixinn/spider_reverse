@@ -4,7 +4,7 @@
 
 本项目记录一些学习爬虫逆向的案例，仅供学习参考，请勿用于非法用途。
 
-目前已完成：**[TLS](#tls)、[震坤行](#zkh)、[网易易盾](#yidun)、[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)**
+目前已完成：**[TLS](#tls)、[震坤行](#zkh)、[网易易盾](#yidun)、[微信小程序反编译逆向（百达星系）](#wechat)、[极验滑块验证码](#jiyan)、[同花顺](#tonghuashun)、[rpc实现解密](#rpc)、[工业和信息化部政务服务平台(加速乐)](#jiasule)、[巨量算数](#juliang)、[Boss直聘](#boss)、[企查查](#qichacha)、[中国五矿](#wukuang)、[qq音乐](#qqmusic)、[产业政策大数据平台](#cyzc)、[企知道](#qizhidao)、[雪球网(acw_sc__v2)](#xueqiu)、[1688](#1688)、[七麦数据](#qimai)、[whggzy](#whggzy)、[企名科技](#qiming)、[全国建筑市场监管公告平台](#mohurd)、[艺恩数据](#endata)、[欧科云链(oklink)](#oklink)、[度衍(uyan)](#uyan)、[凤凰云智影院管理平台](#fenghuang)、[DrissionPage过瑞数6](#dp_rs6)**
 
 点击以上链接可跳转到对应文档位置，代码路径格式为**"月份/网站名称/"**。
 
@@ -3797,3 +3797,42 @@ func main() {
 }
 ```
 
+
+# 案例_2024-4
+
+## <span id='dp_rs6'>一、DrissionPage过瑞数6</span>
+
+### 1、安装DrissionPage
+
+```shell
+pip install DrissionPage
+```
+
+### 2、 代码
+
+用自动化的方式绕过反爬，代码非常简单：
+
+```python
+from DrissionPage import ChromiumOptions, WebPage
+import base64
+
+url = base64.b64decode(b'aHR0cHM6Ly93d3cudXJidGl4LmhrLw==').decode('utf-8')
+
+# 启动并访问网站
+co = ChromiumOptions()
+page = WebPage(chromium_options=co)
+page.get(url)
+
+# 开始监听包含'list?AfbF5fe='的接口
+page.listen.start('list?AfbF5fe=')
+i = 0
+for packet in page.listen.steps():
+    print(packet.response.body)  # body为json格式数据，raw_body可以得到原始数据
+    # 手动退出
+    i += 1
+    if i >= 7:
+        break
+page.close()
+```
+
+DrissionPage同样可以使用在其他反爬中，比起selenium，优点在于不需要复杂的配置，安装即用，并且直接获取数据接口，可操作性很高。
