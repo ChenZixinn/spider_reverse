@@ -163,7 +163,7 @@ print(f"type:{type(ctx)}")
 
 ### <span id='mohurd'>三、全国建筑市场监管公告平台</span>
 
-url： https://jzsc.mohurd.gov.cn/data/company
+url： aHR0cHM6Ly9qenNjLm1vaHVyZC5nb3YuY24vZGF0YS9jb21wYW55
 
 
 
